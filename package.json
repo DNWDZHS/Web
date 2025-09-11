@@ -1,0 +1,20 @@
+{
+  "name": "pro_boshan",
+  "version": "1.0.0",
+  "description": "a cyber muyu",
+  "main": "./server/server.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "start": "node ./server/server.js"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/DNWDZHS/Web.git"
+  },
+  "author": "dnwdzhs",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/DNWDZHS/Web/issues"
+  },
+  "homepage": "https://github.com/DNWDZHS/Web#readme"
+}
