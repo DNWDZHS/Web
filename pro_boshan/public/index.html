@@ -1,0 +1,1942 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+     <!-- 添加一个简单的 favicon -->
+     <link rel="icon" href="data:image/svg+xml,<svg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 100 100%22><text y=%22.9em%22 font-size=%2290%22>☸</text></svg>">
+     
+    <title>Cyber Muyu</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        
+        body {
+            font-family: 'Microsoft YaHei', Arial, sans-serif;
+            background: linear-gradient(135deg, #1a2a6c, #b21f1f, #1a2a6c);
+            color: #fff;
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            padding: 20px;
+            overflow-x: hidden;
+        }
+        
+        .container {
+            max-width: 800px;
+            width: 100%;
+            text-align: center;
+            margin-top: 20px;
+        }
+        
+        .title {
+            font-size: 2.5rem;
+            margin: 20px 0;
+            text-shadow: 0 0 10px rgba(255, 215, 0, 0.8);
+            letter-spacing: 2px;
+        }
+        
+        .subtitle {
+            font-size: 1.2rem;
+            margin-bottom: 30px;
+            color: #ffd700;
+            opacity: 0.9;
+        }
+        
+        /* 确保interactive-area允许子元素溢出 */
+        .interactive-area {
+            position: relative;
+            width: 100%;
+            height: 400px;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            margin-bottom: 20px;
+            overflow: visible; /* 允许子元素溢出 */
+        }
+        
+        .image-container {
+           position: relative;
+           width: 300px; /* 固定显示区域大小 */
+           height: 300px; /* 固定显示区域大小，宽高相等 */
+           overflow: hidden; /* 防止内容溢出 */
+           display: flex;
+           justify-content: center;
+           align-items: center;
+           cursor: pointer;
+           transition: transform 0.2s cubic-bezier(0.34, 1.56, 0.64, 1);
+           transform-origin: center; /* 确保变形围绕中心点 */
+        }
+
+        .image-container img {
+           max-width: 100%; /* 图片最大宽度 */
+           max-height: 100%; /* 图片最大高度 */
+           object-fit: contain; /* 图片按比例缩放 */
+        }
+
+        .image-container.active {
+            transform: scaleX(1.3) scaleY(0.7);
+        }
+        
+        .boshan-image {
+            width: 100%;
+            height: 100%;
+            object-fit: contain;
+        }
+        
+        .merit-text {
+            position: absolute;
+            left: 0;
+            bottom: 0;
+            color: #ffd700;
+            font-weight: bold;
+            font-size: 1.5rem;
+            text-shadow: 0 0 5px rgba(255, 215, 0, 0.8);
+            opacity: 0;
+            transition: opacity 0.3s ease;
+        }
+        
+        .merit-text.show {
+            opacity: 1;
+        }
+        
+        .moral-control-area {
+            position: absolute;
+            top: 0;
+            left: 50%;
+            transform: translateX(-50%);
+            width: 90%;
+            max-width: 400px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 10px;
+            z-index: 15;
+        }
+
+        .originSun {
+            width: 40px; /* 固定宽度 */
+            height: 40px; /* 固定高度 */
+            background: url('images/Sunlight.png') no-repeat center center; /* 使用您指定的图片 */
+            background-size: contain; /* 图片等比例适应显示范围 */
+            cursor: pointer;
+        }
+        
+        /* 确保新的图标样式不会受到其他样式的影响 */
+        .originSun:hover {
+            transform: none; /* 移除悬停放大效果 */
+            filter: none; /* 移除悬停时的阴影效果 */
+        }
+
+        /* 文本选择容器 - 放置在木鱼右侧 */
+        .text-selector-container {
+           position: absolute;
+           right: 20px; /* 距离右侧边缘20px */
+           top: 50%;
+           transform: translateY(-50%);
+           display: flex;
+           flex-direction: column;
+           align-items: flex-start;
+           background: rgba(255, 255, 255, 0.85);
+           border-radius: 10px;
+           padding: 15px;
+           box-shadow: 0 4px 15px rgba(0, 0, 0, 0.2);
+           z-index: 1000; /* 确保在最上层 */
+           min-width: 250px;
+           max-width: calc(100% - 40px); /* 防止在小屏幕上溢出 */
+        }
+
+        /* 标签样式 */
+        .text-selector-label {
+            font-family: 'SimSun', 'Microsoft YaHei', sans-serif;
+            font-size: 1.1rem;
+            color: #5d4037;
+            margin-bottom: 8px;
+            font-weight: bold;
+            text-shadow: 1px 1px 2px rgba(0,0,0,0.1);
+        }
+
+        /* 文本选择器 */
+        /* 经文选择按钮 - 固定在木鱼图片右下角 */
+        .scripture-toggle-btn {
+            position: absolute;
+            bottom: 10px;
+            right: 10px;
+            width: 45px;
+            height: 45px;
+            border-radius: 50%;
+            background: rgba(212, 175, 55, 0.85);
+            border: 2px solid #8b7355;
+            color: #3e2723;
+            font-size: 1.4rem;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            cursor: pointer;
+            box-shadow: 0 3px 8px rgba(0, 0, 0, 0.3);
+            z-index: 20;
+            transition: all 0.2s ease;
+        }
+
+        .scripture-toggle-btn:hover {
+            background: rgba(212, 175, 55, 1);
+            transform: scale(1.05);
+        }
+
+        .scripture-toggle-btn:active {
+            transform: scale(0.95);
+        }
+
+        /* 弹出框覆盖层 - 全屏半透明背景 */
+        .scripture-popup {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0, 0, 0, 0.7);
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            z-index: 1000;
+            opacity: 0;
+            visibility: hidden;
+            transition: all 0.3s ease;
+        }
+
+        .scripture-popup.active {
+            opacity: 1;
+            visibility: visible;
+        }
+
+        /* 弹出框内容 - 适中大小，适合移动设备 */
+        .popup-content {
+            background: linear-gradient(145deg, #2c1b0d, #4a3522);
+            width: 90%;
+            max-width: 400px;
+            border-radius: 16px;
+            overflow: hidden;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.5);
+            border: 2px solid #d4af37;
+            transform: translateY(20px);
+            transition: transform 0.3s ease;
+            max-height: 85vh;
+            display: flex;
+            flex-direction: column;
+        }
+
+        .scripture-popup.active .popup-content {
+            transform: translateY(0);
+        }
+
+        /* 弹出框头部 */
+        .popup-header {
+            padding: 15px 20px;
+            background: rgba(212, 175, 55, 0.15);
+            border-bottom: 1px solid #8b7355;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .popup-header h3 {
+            color: #ffd700;
+            font-family: 'SimSun', 'Microsoft YaHei', sans-serif;
+            font-size: 1.3rem;
+            margin: 0;
+        }
+
+        .close-popup {
+            background: none;
+            border: none;
+            color: #ffd700;
+            font-size: 1.8rem;
+            width: 36px;
+            height: 36px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            cursor: pointer;
+            transition: all 0.2s ease;
+        }
+
+        .close-popup:hover {
+            background: rgba(212, 175, 55, 0.2);
+        }
+
+        /* 弹出框主体 */
+        .popup-body {
+            padding: 20px;
+            flex-grow: 1;
+            overflow-y: auto;
+        }
+
+        /* 移动端优化的选择框 */
+        .mobile-selector {
+            width: 100%;
+            padding: 14px;
+            background: rgba(255, 255, 255, 0.95);
+            border: 2px solid #8b7355;
+            border-radius: 12px;
+            font-family: 'SimSun', 'Microsoft YaHei', sans-serif;
+            font-size: 1.15rem;
+            color: #3e2723;
+            appearance: none;
+            background-image: url("data:image/svg+xml;charset=utf-8,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24'%3E%3Cpath         fill='%236d4c41' d='M7 10l5 5 5-5z'/%3E%3C/svg%3E");
+            background-repeat: no-repeat;
+            background-position: right 12px center;
+            background-size: 20px;
+            box-sizing: border-box;
+        }
+
+        .mobile-selector:focus {
+            outline: none;
+            border-color: #d4af37;
+            box-shadow: 0 0 0 3px rgba(212, 175, 55, 0.3);
+        }
+
+        /* 弹出框底部按钮 */
+        .popup-footer {
+            padding: 15px 20px;
+            border-top: 1px solid #8b7355;
+            background: rgba(0, 0, 0, 0.1);
+        }
+
+        .popup-btn {
+            width: 100%;
+            padding: 14px;
+            font-size: 1.2rem;
+            background: linear-gradient(to bottom, #d4af37, #b8972a);
+            color: #333;
+        }
+
+        .popup-btn:hover {
+            background: linear-gradient(to bottom, #ffd700, #d4af37);
+        }
+
+        /* 加载指示器 */
+        .loading-indicator {
+            display: flex;
+            justify-content: center;
+            padding: 20px;
+        }
+
+        .spinner {
+            width: 28px;
+            height: 28px;
+            border: 3px solid rgba(212, 175, 55, 0.3);
+            border-top-color: #d4af37;
+            border-radius: 50%;
+            animation: spin 1s linear infinite;
+        }
+        /* 文本选择器 */
+
+        .moral-text {
+           right: 100px;
+           top: 50%;
+           transform: translateY(-50%);
+           width: 200px;
+           padding: 15px;
+           background: rgba(0, 0, 0, 0.7);
+           border: 1px solid #ffd700;
+           border-radius: 10px;
+           color: #ffd700;
+           font-size: 1.1rem;
+           line-height: 1.6;
+           display: none;
+           z-index: 20;
+           box-shadow: 0 0 10px rgba(255, 215, 0, 0.5);
+           /* 添加以下属性防止溢出 */
+           max-width: calc(100% - 120px);
+           overflow: hidden;
+           text-overflow: ellipsis;
+        }
+        
+        /* 经文显示区域 */
+        .Scripture-TextDisplay {
+            flex-grow: 1;
+            color: #ffd700;
+            font-size: 1.1rem;
+            font-family: 'SimSun', 'Microsoft YaHei', sans-serif;
+            margin-left: 15px;
+            line-height: 1.4;
+            overflow: hidden;
+            text-overflow: ellipsis;
+            max-width: 70%;
+            text-align: right;
+        }
+
+        .moral-plus {
+            position: absolute;
+            color: #4caf50;
+            font-weight: bold;
+            font-size: 1.2rem;
+            text-shadow: 0 0 5px rgba(76, 175, 80, 0.8);
+            opacity: 0;
+            pointer-events: none;
+        }
+        
+        .control-panel {
+           text-align: center;
+           width: 100%;
+           position: relative;
+           z-index: 1; /* 确保按钮在最上层 */
+        }
+        
+        .action-btn {
+            background: linear-gradient(to bottom, #ffd700, #ff8c00);
+            color: #333;
+            border: none;
+            padding: 12px 30px;
+            font-size: 1.3rem;
+            font-weight: bold;
+            border-radius: 25px;
+            cursor: pointer;
+            box-shadow: 0 4px 10px rgba(0, 0, 0, 0.3);
+            transition: all 0.2s ease;
+        }
+        
+        .action-btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 6px 15px rgba(0, 0, 0, 0.4);
+        }
+        
+        .action-btn:active {
+            transform: translateY(1px);
+            box-shadow: 0 2px 5px rgba(0, 0, 0, 0.3);
+        }
+        
+        .counter {
+            margin: 15px 0;
+            font-size: 1.2rem;
+            color: #ffd700;
+        }
+        
+        .instructions {
+            background: rgba(0, 0, 0, 0.5);
+            border-radius: 10px;
+            padding: 20px;
+            margin: 20px 0;
+            text-align: left;
+            border: 1px solid #ffd700;
+        }
+        
+        .instructions ol {
+            margin-left: 20px;
+            margin-top: 10px;
+            text-align: left;
+            line-height: 1.6;
+        }
+        
+        .instructions li {
+            margin-bottom: 8px;
+        }
+        
+        .footer {
+            margin-top: 30px;
+            font-size: 0.9rem;
+            color: rgba(255, 255, 255, 0.7);
+        }
+
+        /* -------- 评论弹出框样式 */
+        .comment-popup {
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background-color: rgba(0, 0, 0, 0.7);
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            z-index: 1000;
+            opacity: 0;
+            visibility: hidden;
+            transition: opacity 0.3s ease, visibility 0.3s ease;
+        }
+
+        .comment-popup.active {
+            opacity: 1;
+            visibility: visible;
+        }
+
+        .comment-popup .popup-content {
+            background: linear-gradient(135deg, #2c3e50, #1a1a2e);
+            border-radius: 12px;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.5);
+            max-width: 90%;
+            width: 500px;
+            max-height: 90vh;
+            overflow-y: auto;
+        }
+
+        .comment-popup .popup-header {
+            padding: 15px 20px;
+            border-bottom: 1px solid rgba(255, 215, 0, 0.2);
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .comment-popup .popup-header h3 {
+            color: #ffd700;
+            font-size: 1.2rem;
+            margin: 0;
+            font-family: 'SimSun', 'Microsoft YaHei', sans-serif;
+        }
+
+        .comment-popup .popup-body {
+            padding: 20px;
+        }
+
+        .comment-popup .current-line-preview {
+            margin-bottom: 15px;
+            padding: 10px;
+            background: rgba(0, 0, 0, 0.3);
+            border-radius: 6px;
+            border-left: 3px solid #ffd700;
+        }
+
+        .comment-popup .current-line-preview p {
+            color: #e0e0e0;
+            margin: 5px 0 0 0;
+            font-family: 'SimSun', 'Microsoft YaHei', sans-serif;
+            font-size: 1.05rem;
+            line-height: 1.4;
+        }
+
+        .comment-input-area {
+            position: relative;
+            margin-top: 10px;
+        }
+
+        .comment-input-area textarea {
+            width: 100%;
+            min-height: 100px;
+            padding: 12px 15px;
+            border: 1px solid rgba(255, 215, 0, 0.3);
+            border-radius: 6px;
+            background: rgba(0, 0, 0, 0.4);
+            color: #ffd700;
+            font-family: 'SimSun', 'Microsoft YaHei', sans-serif;
+            font-size: 1rem;
+            resize: vertical;
+            box-sizing: border-box;
+            transition: border-color 0.3s ease;
+        }
+
+        .comment-input-area textarea:focus {
+            outline: none;
+            border-color: #ffd700;
+            box-shadow: 0 0 0 2px rgba(255, 215, 0, 0.2);
+        }
+
+        .char-counter {
+            position: absolute;
+            bottom: 5px;
+            right: 10px;
+            color: #aaa;
+            font-size: 0.85rem;
+            pointer-events: none;
+        }
+
+        .char-counter span {
+            color: #ffd700;
+            font-weight: bold;
+        }
+        /* 评论弹出框样式 -------- */
+        
+        /* 阳光控制勾选框样式 */
+        .sunlight-control {
+            margin: 15px 0;
+            padding: 10px;
+            background: rgba(0, 0, 0, 0.4);
+            border-radius: 8px;
+            display: inline-flex;
+            align-items: center;
+            border: 1px solid #ffd700;
+        }
+        
+        .sunlight-control input[type="checkbox"] {
+            width: 18px;
+            height: 18px;
+            margin-right: 8px;
+            cursor: pointer;
+            accent-color: #ffd700;
+        }
+        
+        .sunlight-control label {
+            color: #ffd700;
+            font-size: 1.1rem;
+            cursor: pointer;
+        }
+        
+        @keyframes pulse {
+            0% { transform: scale(1); opacity: 0.8; }
+            50% { transform: scale(1.1); opacity: 1; }
+            100% { transform: scale(1); opacity: 0.8; }
+        }
+
+        @keyframes spin {
+            to { transform: rotate(360deg); }
+        }
+
+        /* 小屏幕设备优化 */
+        @media (max-height: 600px) {
+            .popup-content {
+                max-height: 80vh;
+                margin: 15px 0;
+            }
+
+            .popup-header h3 {
+                font-size: 1.1rem;
+            }
+
+            .mobile-selector {
+                font-size: 1rem;
+                padding: 12px;
+            }
+
+            .popup-btn {
+                padding: 12px;
+                font-size: 1.1rem;
+            }
+        }
+
+        @media (max-width: 768px) {
+            .Scripture-TextDisplay {
+                text-align: center; /* 小屏幕居中对齐，确保短文本可见 */
+                max-width: 85%; /* 增加宽度，给文字更多空间 */
+                margin: 0 auto; /* 居中显示 */
+                white-space: normal; /* 允许换行 */
+                padding: 5px 10px; /* 添加内边距增加可读性 */
+                background: rgba(0, 0, 0, 0.3); /* 轻微背景提升可读性 */
+                border-radius: 8px;
+            }
+
+            .comment-popup .popup-content {
+                width: 95%;
+                margin: 10px;
+            }
+
+            .comment-input-area textarea {
+                min-height: 80px;
+            }
+        }
+
+        @media (max-width: 375px) {
+            .scripture-toggle-btn {
+                width: 40px;
+                height: 40px;
+                font-size: 1.2rem;
+            }
+        }
+    </style>
+</head>
+
+<body>
+    <div class="container">
+        <h1 class="title">Cyber Muyu</h1>
+        
+        <div class="interactive-area">
+            <div class="moral-control-area">
+                <div class="originSun" id="originSun"></div>
+                <div class="Scripture-TextDisplay" id="TextDisplay"></div>
+            </div>
+
+            <div class="image-container" id="MuYu">
+                <img src="images/Boshan.png" alt="木鱼" id="MuYuImage">
+                <div class="merit-text" id="meritText">功德+1</div>
+
+                 <!-- 简洁的经文选择按钮 -->
+                <button class="scripture-toggle-btn" id="scriptureToggleBtn">
+                    <span class="scripture-icon">📖</span>
+                </button>
+            </div>
+        </div>
+
+        <!-- 评论按钮 -->
+        <button class="action-btn comment-btn" id="addCommentBtn" title="添加评论">
+            <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" viewBox="0 0 16 16">
+                <path d="M8 15c4.418 0 8-3.134 8-7s-3.582-7-8-7-8 3.134-8 7c0 1.76.743 3.37 1.97 4.6-.097 1.016-.417 2.13-.771 2.966-.079.186.074.394.273.362 2.256-.37 3.597-.938 4.18-1.234A9.06 9.06 0 0 0 8 15z"/>
+            </svg>
+            <span class="btn-text">评论</span>
+        </button>
+
+        <!-- 评论弹出框 -->
+        <div class="comment-popup" id="commentPopup">
+            <div class="popup-content">
+                <div class="popup-header">
+                    <h3>添加评论 - <span id="commentLineInfo">第25行</span></h3>
+                    <button class="close-popup" id="closeCommentPopup">&times;</button>
+                </div>
+                <div class="popup-body">
+                    <div class="current-line-preview">
+                        <strong>当前行内容:</strong>
+                        <p id="currentLineContent">色不异空，空不异色</p>
+                    </div>
+                    <div class="comment-input-area">
+                        <textarea id="commentInput" placeholder="输入您的评论（最多300字）" maxlength="300"></textarea>
+                        <div class="char-counter">
+                            <span id="charCount">0</span>/300
+                        </div>
+                    </div>
+                </div>
+                <div class="popup-footer">
+                    <button class="action-btn secondary-btn" id="cancelCommentBtn">取消</button>
+                    <button class="action-btn primary-btn" id="saveCommentBtn">保存评论</button>
+                </div>
+            </div>
+        </div>
+
+        <!-- 弹出式文本选择框（初始隐藏） -->
+        <div class="scripture-popup" id="scripturePopup">
+            <div class="popup-content">
+                <div class="popup-header">
+                    <h3>选择经文</h3>
+                    <button class="close-popup" id="closePopup">&times;</button>
+                </div>
+                <div class="popup-body">
+                    <select id="scriptureSelector" class="mobile-selector">
+                        <option value="">不使用经文</option>
+                        <!-- 选项将通过JS动态加载 -->
+                    </select>
+                </div>
+                <div class="popup-footer">
+                    <button class="action-btn popup-btn" id="confirmScriptureBtn">确定</button>
+                </div>
+            </div>
+        </div>
+        
+        <div class="control-panel">
+            <div class="sunlight-control">
+                <input type="checkbox" id="enableSunlight" checked>
+                <label for="enableSunlight">启用阳光模块</label>
+            </div>
+            <div class="counter">已获得道德: <span id="g_moralCounter">0</span></div>
+            <button class="action-btn" id="clickBtn">敲</button>
+        </div>
+        
+        <div class="instructions">
+            <p><strong>功能说明</strong></p>
+            <ol>
+                <li>每次点击按钮会触发图片形变动画和音效</li>
+                <li>在剪纸图片左下角生成固定文本"功德+1"</li>
+                <li>点击后0.5秒从博山炉左侧生成阳光图片</li>
+                <li>阳光图片会随机移动并在3-5秒后消失</li>
+                <li>点击阳光图片会播放音效并移动到初始阳光图标，显示一条经文</li>
+                <li>阳光图片移动到初始阳光图标时会生成"道德+1"文本</li>
+                <li>点击阳光图片显示道德经内容</li>
+            </ol>
+        </div>
+        
+        <div class="footer">
+            <p>版权所有 DNWDZHS </p>
+        </div>
+    </div>
+
+<script>
+    // 音效
+    const audioData = {
+        clickSound: "audio/MuYu.mp3",
+        sunSound: "audio/Sun.mp3"
+    };
+
+    
+
+    // 全局变量
+    let  g_sunlightPool;            // 阳光对象池
+    let  g_originSunElement;        // 阳光回归位置图标
+    let  g_currentTextIndex = 0;    // 行号
+    let  g_moralCounter     = 0;    // 功德计数
+
+    let scriptureToggleBtn = null;
+    let scripturePopup = null;
+    let scriptureSelector = null;
+    let closePopupBtn = null;
+    let confirmScriptureBtn = null;
+    let textDisplay = null;
+    let g_currentScriptureFile = null; // 跟踪当前文本文件
+
+    const Scriptures = [];    // 经文内容
+    const g_audioCache = {};  // 音效缓存
+
+
+    // DOM 元素
+    const clickBtn = document.getElementById('clickBtn');
+    const MuYu = document.getElementById('MuYu');
+
+
+    // 获取木鱼元素
+    const meritText = document.getElementById('meritText');
+    const originSun = document.getElementById('originSun');
+    const TextDisplay = document.getElementById('TextDisplay');
+    const enableSunlightCheckbox = document.getElementById('enableSunlight'); // 阳光控制勾选框
+
+    // 页面加载完成后初始化
+    document.addEventListener('DOMContentLoaded', initApp);
+
+// --------------------------- audio --------------------------- //
+    // 预加载音频
+    function preloadAudio() 
+    {
+        ['clickSound', 'sunSound'].forEach(key => {
+            const audio = new Audio(audioData[key]);
+            g_audioCache[key] = audio;
+        });
+    }
+
+    // 播放音效
+    function playSound(key) 
+    {
+        if (!g_audioCache[key]) return;
+        
+        // 克隆音频元素以支持多重播放
+        const audio = g_audioCache[key].cloneNode();
+        audio.volume = 0.3;
+        audio.play().catch(e => console.log('Audio play failed', e));
+    }
+// --------------------------- audio end------------------------ //
+
+
+// --------------------------- TextSelect --------------------------- //
+    // 初始化文本选择功能
+    function initTextSelector() {
+        // 获取DOM元素
+        scriptureToggleBtn = document.getElementById('scriptureToggleBtn');
+        scripturePopup = document.getElementById('scripturePopup');
+        scriptureSelector = document.getElementById('scriptureSelector');
+        closePopupBtn = document.getElementById('closePopup');
+        confirmScriptureBtn = document.getElementById('confirmScriptureBtn');
+        textDisplay = document.getElementById('TextDisplay');
+        
+        // 检查元素是否存在
+        if (!scriptureToggleBtn || !scripturePopup || !scriptureSelector) {
+            console.error('经文选择器元素未找到');
+            return;
+        }
+        
+        // 添加事件监听
+        scriptureToggleBtn.addEventListener('click', openScripturePopup);
+        closePopupBtn.addEventListener('click', closeScripturePopup);
+        confirmScriptureBtn.addEventListener('click', loadSelectedScripture);
+        
+        // 点击覆盖层关闭弹出框
+        scripturePopup.addEventListener('click', (e) => {
+            if (e.target === scripturePopup) {
+                closeScripturePopup();
+            }
+        });
+        
+        // 按ESC键关闭弹出框
+        document.addEventListener('keydown', (e) => {
+            if (e.key === 'Escape' && scripturePopup.classList.contains('active')) {
+                closeScripturePopup();
+            }
+        });
+        
+        // 加载经文列表
+        loadScriptureList();
+    }
+
+    // 打开弹出框
+    function openScripturePopup() {
+        scripturePopup.classList.add('active');
+        document.body.style.overflow = 'hidden'; // 防止背景滚动
+        scriptureSelector.focus();
+    }
+    
+    // 关闭弹出框
+    function closeScripturePopup() {
+        scripturePopup.classList.remove('active');
+        document.body.style.overflow = 'auto'; // 恢复背景滚动
+    }
+
+    // 从后端加载经文列表
+    async function loadScriptureList() {
+        try {
+            confirmScriptureBtn.disabled = true;
+            confirmScriptureBtn.innerHTML = '<div class="loading-indicator"><div class="spinner"></div></div>';
+            
+            const response = await fetch('/api/resources/Jing');
+            
+            if (!response.ok) {
+                throw new Error(`HTTP error! status: ${response.status}`);
+            }
+
+            const files = await response.json();
+
+            // 清空现有选项（保留默认选项）
+            while (scriptureSelector.options.length > 1) {
+                scriptureSelector.remove(1);
+            }
+
+            // 添加新选项
+            files.forEach(file => {
+                const option = document.createElement('option');
+                option.value = file;
+                option.textContent = file.replace(/\.[^/.]+$/, ""); // 移除扩展名显示
+                scriptureSelector.appendChild(option);
+            });
+        
+        } catch (error) {
+            console.error('加载经文列表失败:', error);
+            alert('加载经文列表失败，请检查网络连接');
+        } finally {
+            confirmScriptureBtn.disabled = false;
+            confirmScriptureBtn.textContent = '确定';
+        }
+    }
+
+    // 加载选中的经文
+    async function loadSelectedScripture() {
+        const selectedFile = scriptureSelector.value;
+
+        try {
+
+            // 1. 先保存当前经文的阅读进度（如果存在）
+            if (g_currentScriptureFile) {
+                await saveCurrentReadingProgress();
+            }
+
+            // 2. 处理"不使用经文"选项
+            if (!selectedFile || selectedFile === "") {
+                // 清除当前经文
+                g_currentScriptureFile = null;
+                Scriptures.length = 0;
+                g_currentTextIndex = 0;
+                closeScripturePopup();
+                return;
+            }
+
+            confirmScriptureBtn.disabled = true;
+            confirmScriptureBtn.innerHTML = '<div class="loading-indicator"><div class="spinner"></div></div>';
+
+            const response = await fetch(`/api/resources/Jing/${encodeURIComponent(selectedFile)}`);
+
+            if (!response.ok) {
+                throw new Error(`HTTP error! status: ${response.status}`);
+            }
+
+            const data = await response.json();
+
+            // 4. 保存新经文文件名
+            const previousFile = g_currentScriptureFile;
+            g_currentScriptureFile = selectedFile;
+            
+            // 5. 清空并存储新经文
+            Scriptures.length = 0;
+            Scriptures.push(...data.content);
+            
+            // 6. 获取上次阅读进度
+            g_currentTextIndex = await loadLocalOrServerProgress(selectedFile);
+            
+            // 确保索引在有效范围内
+            if (g_currentTextIndex >= Scriptures.length) {
+                g_currentTextIndex = 0;
+            }
+
+
+            // 7. 显示加载消息
+            const fileNameWithoutExt = selectedFile.replace(/\.txt$/, '');
+
+            // 8. 关闭弹出框
+            closeScripturePopup();
+
+        } catch (error) {
+            console.error('加载经文内容失败:', error);
+
+            // 发生错误时恢复之前的经文（如果存在）
+            if (g_currentScriptureFile && Scriptures.length === 0) {
+                // 尝试重新加载之前的经文（简化版）
+                console.log('尝试恢复之前的经文状态');
+            }
+        } finally {
+            confirmScriptureBtn.disabled = false;
+            confirmScriptureBtn.textContent = '确定';
+        }
+    }
+
+    // 保存当前经文的阅读进度
+    async function saveCurrentReadingProgress() {
+        // 没有当前经文文件或经文数据为空，不保存
+        if (!g_currentScriptureFile || Scriptures.length === 0) {
+            return;
+        }
+
+        try {
+            const response = await fetch('/api/save-reading-progress', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                },
+                body: JSON.stringify({
+                    filename: g_currentScriptureFile,
+                    currentIndex: g_currentTextIndex
+                })
+            });
+
+            if (response.ok) {
+                console.log(`Saved reading progress for ${g_currentScriptureFile}: line ${g_currentTextIndex}`);
+                return true;
+            } else {
+                const errorData = await response.json();
+                console.warn('Failed to save reading progress:', errorData.message);
+                return false;
+            }
+        } catch (error) {
+            console.error('Error saving reading progress:', error);
+            // 使用localStorage作为备用保存
+            saveToLocalProgress(g_currentScriptureFile, g_currentTextIndex);
+            return false;
+        }
+    }
+
+    // 本地存储作为备用方案
+    function saveToLocalProgress(filename, index) {
+        try {
+            const progressData = {
+                lastIndex: index,
+                timestamp: new Date().toISOString(),
+                fileName: filename
+            };
+            localStorage.setItem(`readingProgress_${filename}`, JSON.stringify(progressData));
+            console.log(`Saved reading progress to localStorage for ${filename}: line ${index}`);
+        } catch (e) {
+            console.error('Failed to save to localStorage:', e);
+        }
+    }
+
+    // 从本地存储加载阅读进度
+    async function loadLocalOrServerProgress(filename) {
+        try {
+            // 首先尝试从服务器加载
+            const serverResponse = await fetch(`/api/get-reading-progress/${encodeURIComponent(filename)}`);
+
+            if (serverResponse.ok) {
+                const serverData = await serverResponse.json();
+                if (serverData.lastIndex !== undefined) {
+                    console.log(`Loaded server progress for ${filename}: line ${serverData.lastIndex}`);
+                    return serverData.lastIndex;
+                }
+            }
+        } catch (serverError) {
+            console.warn('Failed to load server progress:', serverError);
+        }
+
+        // 服务器加载失败或没有进度，尝试从本地加载
+        try {
+            const localData = localStorage.getItem(`readingProgress_${filename}`);
+            if (localData) {
+                const progress = JSON.parse(localData);
+                // 只接受7天内的本地进度
+                const daysOld = (new Date() - new Date(progress.timestamp)) / (1000 * 60 * 60 * 24);
+                if (daysOld < 7) {
+                    console.log(`Loaded local progress for ${filename}: line ${progress.lastIndex} (${daysOld.toFixed(1)} days old)`);
+                    return progress.lastIndex;
+                }
+            }
+        } catch (localError) {
+            console.error('Failed to load local progress:', localError);
+        }
+
+        // 都没有，返回0
+        return 0;
+    }
+
+    // 增强的页面卸载处理
+    function initProgressSaving() {
+        // 1. 页面可见性变化
+        document.addEventListener('visibilitychange', async () => {
+            if (document.visibilityState === 'hidden' && g_currentScriptureFile) {
+                await saveCurrentReadingProgress();
+            }
+        });
+
+        // 2. 页面隐藏（移动端优化）
+        window.addEventListener('pagehide', async (event) => {
+            if (g_currentScriptureFile) {
+                // iOS设备上，使用同步XHR确保保存
+                if (event.persisted || /iPhone|iPad|iPod/i.test(navigator.userAgent)) {
+                    saveReadingProgressSync();
+                } else {
+                    await saveCurrentReadingProgress();
+                }
+            }
+        });
+
+        // 3. 页面卸载（使用Beacon API）
+        window.addEventListener('unload', () => {
+            if (g_currentScriptureFile && navigator.sendBeacon) {
+                const data = {
+                    filename: g_currentScriptureFile,
+                    currentIndex: g_currentTextIndex
+                };
+                const blob = new Blob([JSON.stringify(data)], { type: 'application/json' });
+                navigator.sendBeacon('/api/save-reading-progress', blob);
+                console.log('Reading progress sent via Beacon API on unload');
+            }
+        });
+
+        // 4. 同步保存方法（用于关键场景）
+        window.saveReadingProgressSync = function() {
+            if (!g_currentScriptureFile) return;
+
+            try {
+                const xhr = new XMLHttpRequest();
+                xhr.open('POST', '/api/save-reading-progress', false); // 同步请求
+                xhr.setRequestHeader('Content-Type', 'application/json');
+                xhr.send(JSON.stringify({
+                    filename: g_currentScriptureFile,
+                    currentIndex: g_currentTextIndex
+                }));
+
+                if (xhr.status === 200) {
+                    console.log(`Sync saved reading progress for ${g_currentScriptureFile}: line ${g_currentTextIndex}`);
+                }
+            } catch (error) {
+                console.error('Sync save failed:', error);
+                // 失败时尝试本地存储
+                saveToLocalProgress(g_currentScriptureFile, g_currentTextIndex);
+            }
+        };
+    }
+// --------------------------- TextSelect end------------------------ //
+
+
+// --------------------------- Comment --------------------------- //
+    // 评论功能初始化
+    function initCommentSystem() {
+        const addCommentBtn = document.getElementById('addCommentBtn');
+        const commentPopup = document.getElementById('commentPopup');
+        const closeCommentPopup = document.getElementById('closeCommentPopup');
+        const cancelCommentBtn = document.getElementById('cancelCommentBtn');
+        const saveCommentBtn = document.getElementById('saveCommentBtn');
+        const commentInput = document.getElementById('commentInput');
+        const charCount = document.getElementById('charCount');
+
+        if (!addCommentBtn || !commentPopup) {
+            console.log('Comment system elements not found ');
+            return;
+        }
+
+        // 显示评论弹出框
+        addCommentBtn.addEventListener('click', () => {
+            if (!g_currentScriptureFile) {
+                showTemporaryMessage('请先选择一个经文文件', 'warning');
+                return;
+            }
+
+            updateCommentPopupContent();
+            commentPopup.classList.add('active');
+
+            // 聚焦输入框并清空
+            commentInput.value = '';
+            commentInput.focus();
+            updateCharCount();
+        });
+
+        // 关闭弹出框
+        function closePopup() {
+            commentPopup.classList.remove('active');
+            commentInput.value = '';
+        }
+
+        // 事件监听
+        closeCommentPopup.addEventListener('click', closePopup);
+        cancelCommentBtn.addEventListener('click', closePopup);
+
+        // 点击遮罩层关闭
+        commentPopup.addEventListener('click', (e) => {
+            if (e.target === commentPopup) {
+                closePopup();
+            }
+        });
+
+        // 按下ESC键关闭
+        document.addEventListener('keydown', (e) => {
+            if (e.key === 'Escape' && commentPopup.classList.contains('active')) {
+                closePopup();
+            }
+        });
+
+        // 字符计数
+        commentInput.addEventListener('input', updateCharCount);
+
+        // 保存评论
+        saveCommentBtn.addEventListener('click', async () => {
+            const comment = commentInput.value.trim();
+
+            if (!comment) {
+                showTemporaryMessage('评论内容不能为空', 'warning');
+                return;
+            }
+
+            saveCommentBtn.disabled = true;
+            saveCommentBtn.innerHTML = '<span>保存中...</span>';
+
+            try {
+                const success = await saveCommentToServer();
+
+                if (success) {
+                    showTemporaryMessage('评论保存成功！', 'success');
+                    closePopup();
+                } else {
+                    showTemporaryMessage('评论保存失败，请重试', 'error');
+                }
+            } catch (error) {
+                console.error('保存评论出错:', error);
+                showTemporaryMessage('保存评论时出错: ' + error.message, 'error');
+            } finally {
+                saveCommentBtn.disabled = false;
+                saveCommentBtn.innerHTML = '<span>保存评论</span>';
+            }
+        });
+
+        // 更新弹出框内容
+        function updateCommentPopupContent() {
+            const currentLineIndex = g_currentTextIndex > 0 ? g_currentTextIndex - 1 : 0;
+            const currentLineContent = Scriptures[currentLineIndex] || '';
+
+            document.getElementById('commentLineInfo').textContent = `第${currentLineIndex + 1}行`;
+            document.getElementById('currentLineContent').textContent = currentLineContent;
+        }
+
+        // 更新字符计数
+        function updateCharCount() {
+            const count = commentInput.value.length;
+            charCount.textContent = count;
+
+            if (count > 280) {
+                charCount.parentElement.style.color = count > 300 ? '#ff4444' : '#ffd700';
+            } else {
+                charCount.parentElement.style.color = '#aaa';
+            }
+        }
+
+        // 保存评论到服务器
+        async function saveCommentToServer() {
+            const currentLineIndex = g_currentTextIndex > 0 ? g_currentTextIndex - 1 : 0;
+            const currentLineContent = Scriptures[currentLineIndex] || '';
+            const comment = commentInput.value.trim();
+                
+            try {
+                const response = await fetch('/api/save-comment', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                        'Accept': 'application/json', // 明确告知服务器我们期望JSON响应
+                        'X-Requested-With': 'XMLHttpRequest' // 标识这是一个AJAX请求
+                    },
+                    body: JSON.stringify({
+                        filename: g_currentScriptureFile,
+                        lineNumber: currentLineIndex + 1,
+                        lineContent: currentLineContent,
+                        comment: comment,
+                        timestamp: new Date().toISOString()
+                    }),
+                    credentials: 'same-origin' // 确保cookie随请求发送
+                });
+                
+                // 检查响应状态
+                if (!response.ok) {
+                    // 尝试解析JSON，如果失败则尝试获取文本
+                    let errorData;
+                    try {
+                        errorData = await response.json();
+                    } catch (jsonError) {
+                        // 响应不是JSON，可能是HTML错误页面
+                        const text = await response.text();
+                        throw new Error(`服务器错误: HTTP ${response.status} ${response.statusText}\n\n服务器返回了非JSON响应，可能是配置错误或页面未找到。`);
+                    }
+                    throw new Error(errorData.message || `保存失败: HTTP ${response.status}`);
+                }
+                
+                // 检查响应内容类型
+                const contentType = response.headers.get('content-type');
+                if (!contentType || !contentType.includes('application/json')) {
+                    const text = await response.text();
+                    // 检查是否是常见的错误页面
+                    if (text.includes('<!DOCTYPE html>') || text.includes('<html')) {
+                        throw new Error('服务器返回了HTML页面而非JSON数据。请检查API端点配置是否正确。');
+                    }
+                    throw new Error('服务器返回了非JSON格式的响应');
+                }
+                
+                // 一切正常，解析JSON
+                const result = await response.json();
+                
+                if (result.success) {
+                    return true;
+                } else {
+                    throw new Error(result.message || '评论保存失败');
+                }
+                
+            } catch (error) {
+                console.error('保存评论时发生错误:', error);
+                
+                // 提供更详细的错误信息
+                let errorMessage = '保存评论失败';
+                if (error.message.includes('Unexpected token')) {
+                    errorMessage = '服务器配置错误：返回了HTML页面而非JSON数据';
+                } else if (error.message.includes('Failed to fetch') || error.name === 'TypeError') {
+                    errorMessage = '无法连接到服务器，请检查网络连接或服务器状态';
+                } else if (error.message.includes('HTTP 404')) {
+                    errorMessage = 'API端点未找到，请检查服务器路由配置';
+                } else if (error.message.includes('HTTP 401') || error.message.includes('HTTP 403')) {
+                    errorMessage = '权限不足，您可能需要登录才能评论';
+                } else {
+                    errorMessage = error.message;
+                }
+                
+                // 显示友好错误消息
+                showTemporaryMessage(errorMessage, 'error', { duration: 6000 });
+                throw error; // 重新抛出错误以便调用者处理
+            }
+        }
+    }
+// --------------------------- Comment end------------------------ //
+
+// --------------------------- sunlight --------------------------- //
+
+// 阳光类
+class Sunlight 
+{
+    constructor(element) {
+        this.element = element;
+        this.isMoving = false;          // 刚创建向随机方向移动
+        this.isReturning = false;       // 被点击向固定位置移动
+        this.timeoutId = null;          // 定时器
+        this.animationFrameId = null;   // 移动动画相关
+        this.x = 0;
+        this.y = 0;
+        this.targetX = 0;
+        this.targetY = 0;
+        this.movingDuration = 0;        // 移动持续时间
+        this.startTime = 0;             // 开始时间
+        this.originSunRect = null;      // 初始阳光图标位置
+    }
+
+    // 初始化阳光元素
+    init(startX, startY, originSunRect) {
+        this.element.style.left = `${startX}px`;
+        this.element.style.top = `${startY}px`;
+        this.element.style.display = 'block';
+        
+        // 记录初始阳光初始化位置
+        this.originSunRect = originSunRect;
+        
+        // 设置移动范围
+        const moveRange = 100;
+        const minX = Math.max(0, startX - moveRange);
+        const maxX = Math.min(window.innerWidth - 40, startX + moveRange);
+        const minY = Math.max(0, startY - moveRange);
+        const maxY = Math.min(window.innerHeight - 40, startY + moveRange);
+
+        // 生成随机目标位置
+        this.targetX = Math.max(minX, Math.min(maxX, Math.random() * (maxX - minX) + minX));
+        this.targetY = Math.max(minY, Math.min(maxY, Math.random() * (maxY - minY) + minY));
+        
+        this.x = startX;
+        this.y = startY;
+        this.isMoving = true;
+        this.isReturning = false;
+        
+        // 开始移动动画
+        this.movingDuration = 1000; // 1秒
+        this.startTime = Date.now();
+        this.animateMovement();
+        
+        // 绑定点击事件
+        this.element.addEventListener('click', () => this.SunhandleClick());
+    }
+
+    // 移动动画
+    animateMovement() {
+        if (!this.isMoving && !this.isReturning) {
+            return;
+        }
+        
+        const now = Date.now();
+        const elapsed = now - this.startTime;
+        const progress = Math.min(elapsed / this.movingDuration, 1);
+        
+        if (progress < 1) {
+            if (this.isReturning) // 向初始阳光图标移动
+            {
+                // 获取初始阳光实时位置
+                const oriSunRect = document.getElementById('originSun').getBoundingClientRect();
+                if(oriSunRect)
+                {
+                    this.x += (this.originSunRect.left + this.originSunRect.width/2 - this.x) * 0.1;
+                    this.y += (this.originSunRect.top + this.originSunRect.height/2 - this.y) * 0.1;
+                }
+                else
+                {
+                    // 获取实时位置失败，使用初始化位置
+                    this.x += (this.originSunRect.left + this.originSunRect.width/2 - this.x) * 0.1;
+                    this.y += (this.originSunRect.top + this.originSunRect.height/2 - this.y) * 0.1;
+                }
+            } 
+            else // 向随机点移动
+            {
+                this.x = this.x + (this.targetX - this.x) * progress;
+                this.y = this.y + (this.targetY - this.y) * progress;
+            }
+            
+            this.element.style.left = `${this.x}px`;
+            this.element.style.top = `${this.y}px`;
+            
+            this.animationFrameId = requestAnimationFrame(() => this.animateMovement());
+        } 
+        else 
+        {
+            // 移动完成
+            this.isMoving = false;
+            this.element.style.left = `${this.targetX}px`;
+            this.element.style.top = `${this.targetY}px`;
+
+            if(this.isReturning)
+            {
+                this.destroy();
+            }
+            else // 3-5秒后消失
+            {
+                const delay = 3000 + Math.random() * 2000;
+                this.timeoutId = setTimeout(() => {
+                    this.destroy();
+                }, delay);
+            }
+
+        }
+    }
+
+    // 处理点击事件
+    SunhandleClick() {
+        if (this.isReturning) return;
+        
+        // 播放音效
+        playSound('sunSound');
+        
+        // 清除原有动画和定时器
+        cancelAnimationFrame(this.animationFrameId);
+        if (this.timeoutId) clearTimeout(this.timeoutId);
+        
+        // 创建"道德+1"效果
+        createMoralPlusOne(this.originSunRect.left, this.originSunRect.top);
+        
+        // 开始返回到初始阳光图标的动画
+        this.isReturning = true;
+        this.movingDuration = 500; // 0.5秒
+        this.startTime = Date.now();
+        this.animateMovement();
+    }
+
+    // 销毁阳光元素
+    destroy() {
+        cancelAnimationFrame(this.animationFrameId);
+        if (this.timeoutId) clearTimeout(this.timeoutId);
+        
+        this.element.style.display = 'none';
+        
+        // 返回到对象池
+        g_sunlightPool.returnObject(this);
+    }
+}
+
+// 对象池类
+class ObjectPool 
+{
+    constructor(createFunc, maxSize = 15) {
+        this.pool = [];
+        this.createFunc = createFunc;
+        this.maxSize = maxSize;
+    }
+    
+    getObject() {
+        if (this.pool.length > 0) {
+            return this.pool.pop();
+        }
+        return this.createFunc();
+    }
+    
+    returnObject(obj) {
+        if (this.pool.length < this.maxSize) {
+            this.pool.push(obj);
+        } else {
+            // 池已满，销毁对象
+            obj.element.remove();
+        }
+    }
+    
+    clear() {
+        while (this.pool.length > 0) {
+            const obj = this.pool.pop();
+            obj.element.remove();
+        }
+        this.pool = [];
+    }
+}
+
+    // 创建阳光元素
+    function createSunlightElement() 
+    {
+        const sunlight = document.createElement('img');
+        sunlight.src = 'images/Sunlight.png';
+        sunlight.className = 'sunlight';
+        sunlight.style.position = 'absolute';
+        sunlight.style.display = 'none';
+        sunlight.style.zIndex = '9000';
+        sunlight.style.width = '40px';
+        sunlight.style.height = '40px';
+        sunlight.style.cursor = 'pointer';
+        sunlight.style.userSelect = 'none';
+        document.body.appendChild(sunlight);
+
+        return new Sunlight(sunlight);
+    }
+
+    // 清除所有存在的阳光
+    function clearAllSunlights() 
+    {
+        if (g_sunlightPool) {
+            g_sunlightPool.clear();
+        }
+    }
+
+    // 创建"道德+1"效果
+    function createMoralPlusOne(x, y) 
+    {
+        const moralPlus = document.createElement('div');
+        moralPlus.textContent = '道德+1';
+        moralPlus.style.position = 'absolute';
+        moralPlus.style.left = `${x}px`;
+        moralPlus.style.top = `${y}px`;
+        moralPlus.style.color = '#4CAF50';
+        moralPlus.style.fontWeight = 'bold';
+        moralPlus.style.fontSize = '18px';
+        moralPlus.style.zIndex = '9001';
+        moralPlus.style.pointerEvents = 'none';
+        moralPlus.style.transition = 'all 0.5s ease';
+
+        document.body.appendChild(moralPlus);
+
+        // 上浮动效果
+        let opacity = 1;
+        let posY = y;
+        const animate = () => {
+            posY -= 2;
+            opacity -= 0.02;
+            moralPlus.style.top = `${posY}px`;
+            moralPlus.style.opacity = opacity.toString();
+
+            if (opacity > 0) {
+                requestAnimationFrame(animate);
+            } else {
+                document.body.removeChild(moralPlus);
+            }
+        };
+
+        const moralCounterElement = document.getElementById('g_moralCounter');
+        moralCounterElement.textContent = ++g_moralCounter;
+
+        // DOM子元素本身分发事件才能收到
+        const ShowTextEvent = new Event('ShowScriptures');
+        const TextDisplay = document.getElementById('TextDisplay');
+        console.log("before dispatch event");
+        TextDisplay.dispatchEvent(ShowTextEvent);
+        requestAnimationFrame(animate);
+    }
+
+    // 初始化阳光模块
+    function initSunlightModule() 
+    {
+        // 获取初始阳光初始化位置
+        g_originSunElement = document.getElementById('originSun') || document.querySelector('.originSun');
+        // 初始化对象池
+        g_sunlightPool = new ObjectPool(createSunlightElement, 15);
+    }
+
+    // 创建阳光
+    function createSunlight() {
+        // 检查阳光模块是否启用
+        if (!enableSunlightCheckbox || !enableSunlightCheckbox.checked) {
+            return; // 阳光模块未启用，不创建阳光
+        }
+
+        // 每次创建阳光重新获取生成位置
+        const MuYuRect = document.getElementById('MuYuImage').getBoundingClientRect();
+        const startX = MuYuRect.left - 50; // 从木鱼左侧50px处生成
+        const startY = MuYuRect.top + (MuYuRect.height / 2) - 20;
+
+        // 获取初始阳光初始化位置
+        const originSunRect = g_originSunElement.getBoundingClientRect();
+        const sunlight = g_sunlightPool.getObject();
+        sunlight.init(startX, startY, originSunRect);
+    }
+// --------------------------- sunlight end------------------------ //
+
+
+
+    // 显示功德+1
+    function showMeritText() 
+    {
+        meritText.classList.add('show');
+        setTimeout(() => {
+            meritText.classList.remove('show');
+        }, 800);
+    }
+
+    // 显示经文
+    function showScriptures() 
+    {
+        const TextDisplay = document.getElementById('TextDisplay');
+        if (!TextDisplay) return;
+
+        // 清除上一句文本
+        TextDisplay.textContent = '';
+
+        // 经文为空直接返回
+        if (!Scriptures || Scriptures.length === 0)
+            return;
+
+        // 逐行显示
+        TextDisplay.textContent = Scriptures[g_currentTextIndex];
+
+        // 更新索引，到达末尾时重置
+        g_currentTextIndex = (g_currentTextIndex + 1) % Scriptures.length;
+
+        // 添加显示动画
+        TextDisplay.style.opacity = '0';
+        TextDisplay.style.transform = 'translateY(-10px)';
+
+        setTimeout(() => {
+            TextDisplay.style.transition = 'opacity 0.3s ease, transform 0.3s ease';
+            TextDisplay.style.opacity = '1';
+            TextDisplay.style.transform = 'translateY(0)';
+        }, 50);
+    }
+
+    // 处理敲击按钮点击事件
+    function handleClick() 
+    {
+        // 播放敲击音效
+        playSound('clickSound');
+        
+        // 图片形变动画
+        MuYu.classList.add('active');
+        setTimeout(() => {
+            MuYu.classList.remove('active');
+        }, 100);
+        
+        // 显示功德+1
+        showMeritText();
+        
+        // 检查阳光模块是否启用
+        if (enableSunlightCheckbox && enableSunlightCheckbox.checked) {
+            // 0.5秒后创建阳光
+            createSunlight();
+        }
+        else // 阳光模块不启用，敲击直接显示经文
+        {
+            const ShowTextEvent = new Event('ShowScriptures');
+            console.log("before dispatch event");
+            const TextDisplay = document.getElementById('TextDisplay');
+            TextDisplay.dispatchEvent(ShowTextEvent);
+        }
+    }
+
+
+/**
+ * 显示临时消息提示
+ * @param {string} message - 要显示的消息内容，支持HTML
+ * @param {string} type - 消息类型: 'success', 'error', 'warning', 'info'
+ * @param {Object} options - 配置选项
+ * @param {number} [options.duration=3000] - 显示持续时间(毫秒)
+ * @param {boolean} [options.allowHTML=true] - 是否允许HTML内容
+ * @param {Function} [options.onClose] - 关闭时的回调函数
+ */
+function showTemporaryMessage(message, type = 'info', options = {}) {
+    // 合并默认选项
+    const config = {
+        duration: options.duration || 3000,
+        allowHTML: options.allowHTML !== undefined ? options.allowHTML : true,
+        onClose: options.onClose || null
+    };
+
+    // 消息容器 - 使用全局唯一的容器
+    let messageContainer = document.getElementById('temporary-messages-container');
+    if (!messageContainer) {
+        messageContainer = document.createElement('div');
+        messageContainer.id = 'temporary-messages-container';
+        messageContainer.style.position = 'fixed';
+        messageContainer.style.top = '20px';
+        messageContainer.style.right = '20px';
+        messageContainer.style.zIndex = '9999';
+        messageContainer.style.display = 'flex';
+        messageContainer.style.flexDirection = 'column';
+        messageContainer.style.gap = '10px';
+        document.body.appendChild(messageContainer);
+    }
+
+    // 创建消息元素
+    const messageElement = document.createElement('div');
+    messageElement.className = `temporary-message ${type}`;
+    messageElement.style.position = 'relative';
+    messageElement.style.minWidth = '280px';
+    messageElement.style.padding = '12px 16px 12px 40px';
+    messageElement.style.borderRadius = '8px';
+    messageElement.style.marginBottom = '10px';
+    messageElement.style.boxShadow = '0 4px 12px rgba(0, 0, 0, 0.15)';
+    messageElement.style.transform = 'translateX(120%)';
+    messageElement.style.opacity = '0';
+    messageElement.style.transition = 'transform 0.3s ease, opacity 0.3s ease';
+    messageElement.style.fontFamily = "'Microsoft YaHei', 'SimSun', sans-serif";
+    messageElement.style.fontSize = '0.95rem';
+    messageElement.style.lineHeight = '1.4';
+    
+    // 设置背景和文字颜色
+    let bgColor, textColor, iconContent, iconColor;
+    switch (type) {
+        case 'success':
+            bgColor = 'rgba(40, 167, 69, 0.9)';
+            textColor = '#ffffff';
+            iconContent = '✓';
+            iconColor = '#ffffff';
+            break;
+        case 'error':
+            bgColor = 'rgba(220, 53, 69, 0.9)';
+            textColor = '#ffffff';
+            iconContent = '×';
+            iconColor = '#ffffff';
+            break;
+        case 'warning':
+            bgColor = 'rgba(255, 193, 7, 0.9)';
+            textColor = '#212529';
+            iconContent = '!';
+            iconColor = '#212529';
+            break;
+        case 'info':
+        default:
+            bgColor = 'rgba(23, 162, 184, 0.9)';
+            textColor = '#ffffff';
+            iconContent = 'i';
+            iconColor = '#ffffff';
+            break;
+    }
+    
+    messageElement.style.backgroundColor = bgColor;
+    messageElement.style.color = textColor;
+
+    // 添加图标
+    const iconElement = document.createElement('div');
+    iconElement.style.position = 'absolute';
+    iconElement.style.left = '12px';
+    iconElement.style.top = '50%';
+    iconElement.style.transform = 'translateY(-50%)';
+    iconElement.style.width = '18px';
+    iconElement.style.height = '18px';
+    iconElement.style.borderRadius = '50%';
+    iconElement.style.backgroundColor = 'rgba(255, 255, 255, 0.3)';
+    iconElement.style.color = iconColor;
+    iconElement.style.display = 'flex';
+    iconElement.style.alignItems = 'center';
+    iconElement.style.justifyContent = 'center';
+    iconElement.style.fontSize = '0.8rem';
+    iconElement.style.fontWeight = 'bold';
+    iconElement.style.fontFamily = 'Arial, sans-serif';
+    iconElement.textContent = iconContent;
+    messageElement.appendChild(iconElement);
+
+    // 设置消息内容
+    const messageContentElement = document.createElement('div');
+    messageContentElement.style.wordWrap = 'break-word';
+    
+    if (config.allowHTML) {
+        // 简单的XSS防护 - 移除危险标签
+        const cleanMessage = sanitizeHTML(message);
+        messageContentElement.innerHTML = cleanMessage;
+    } else {
+        messageContentElement.textContent = message;
+    }
+    
+    messageElement.appendChild(messageContentElement);
+
+    // 添加关闭按钮
+    const closeBtn = document.createElement('button');
+    closeBtn.innerHTML = '&times;';
+    closeBtn.style.position = 'absolute';
+    closeBtn.style.top = '4px';
+    closeBtn.style.right = '8px';
+    closeBtn.style.background = 'none';
+    closeBtn.style.border = 'none';
+    closeBtn.style.color = 'rgba(255, 255, 255, 0.7)';
+    closeBtn.style.cursor = 'pointer';
+    closeBtn.style.fontSize = '1.2rem';
+    closeBtn.style.width = '24px';
+    closeBtn.style.height = '24px';
+    closeBtn.style.display = 'flex';
+    closeBtn.style.alignItems = 'center';
+    closeBtn.style.justifyContent = 'center';
+    closeBtn.style.borderRadius = '50%';
+    closeBtn.style.padding = '0';
+    closeBtn.style.opacity = '0.7';
+    closeBtn.style.transition = 'opacity 0.2s';
+    
+    closeBtn.onmouseenter = () => { closeBtn.style.opacity = '1'; };
+    closeBtn.onmouseleave = () => { closeBtn.style.opacity = '0.7'; };
+    
+    closeBtn.onclick = (e) => {
+        e.stopPropagation();
+        removeMessageElement();
+    };
+    
+    messageElement.appendChild(closeBtn);
+
+    // 添加到容器
+    messageContainer.appendChild(messageElement);
+
+    // 强制重排以使过渡效果生效
+    void messageElement.offsetWidth;
+    
+    // 显示消息
+    setTimeout(() => {
+        messageElement.style.transform = 'translateX(0)';
+        messageElement.style.opacity = '1';
+    }, 10);
+
+    // 设置自动关闭
+    const timeoutId = setTimeout(removeMessageElement, config.duration);
+
+    // 鼠标悬停时暂停自动关闭
+    let isHovering = false;
+    messageElement.addEventListener('mouseenter', () => {
+        isHovering = true;
+        clearTimeout(timeoutId);
+    });
+
+    messageElement.addEventListener('mouseleave', () => {
+        isHovering = false;
+        setTimeout(() => {
+            if (!isHovering) {
+                removeMessageElement();
+            }
+        }, 200);
+    });
+
+    // 移除消息元素
+    function removeMessageElement() {
+        if (!messageElement.parentNode) return;
+        
+        // 淡出动画
+        messageElement.style.transform = 'translateX(120%)';
+        messageElement.style.opacity = '0';
+        
+        setTimeout(() => {
+            if (messageElement.parentNode) {
+                messageContainer.removeChild(messageElement);
+            }
+            
+            // 如果容器中没有消息了，移除容器
+            if (messageContainer.children.length === 0) {
+                document.body.removeChild(messageContainer);
+            }
+            
+            // 调用关闭回调
+            if (typeof config.onClose === 'function') {
+                config.onClose();
+            }
+        }, 300);
+    }
+
+    // 简单的HTML清理函数，防止XSS攻击
+    function sanitizeHTML(html) {
+        if (!html || typeof html !== 'string') return '';
+        
+        // 创建一个临时div来解析HTML
+        const tempDiv = document.createElement('div');
+        tempDiv.innerHTML = html;
+        
+        // 递归清理元素
+        function cleanNode(node) {
+            if (node.nodeType === Node.ELEMENT_NODE) {
+                // 移除危险的标签和属性
+                const dangerousTags = ['script', 'style', 'iframe', 'object', 'embed', 'form', 'button'];
+                const dangerousAttrs = ['onerror', 'onload', 'onmouseover', 'onclick', 'onfocus', 'src', 'href'];
+                
+                if (dangerousTags.includes(node.tagName.toLowerCase())) {
+                    const safeReplacement = document.createTextNode(node.textContent || '');
+                    node.parentNode.replaceChild(safeReplacement, node);
+                    return;
+                }
+                
+                // 移除危险属性
+                for (let i = node.attributes.length - 1; i >= 0; i--) {
+                    const attr = node.attributes[i];
+                    if (dangerousAttrs.some(da => attr.name.toLowerCase().includes(da)) ||
+                        attr.value.toLowerCase().includes('javascript:') ||
+                        attr.value.toLowerCase().includes('data:text/html')) {
+                        node.removeAttribute(attr.name);
+                    }
+                }
+                
+                // 递归处理子节点
+                for (let i = 0; i < node.childNodes.length; i++) {
+                    cleanNode(node.childNodes[i]);
+                }
+            }
+        }
+        
+        // 清理所有节点
+        for (let i = 0; i < tempDiv.childNodes.length; i++) {
+            cleanNode(tempDiv.childNodes[i]);
+        }
+        
+        return tempDiv.innerHTML;
+    }
+}
+
+    // 初始化
+    function initApp() 
+    {
+        // 预加载音频
+        preloadAudio();
+        
+        // 事件绑定
+        clickBtn.addEventListener('click', handleClick);
+        TextDisplay.addEventListener('ShowScriptures', () => showScriptures());
+        
+        // 初始化文本显示模块
+        initTextSelector();
+        
+        // 初始化阳光模块
+        initSunlightModule();
+        
+        // 初始化进度保存
+        initProgressSaving();
+
+        // 初始化评论模块
+        initCommentSystem();
+
+
+        // 添加勾选框变化事件监听
+        if (enableSunlightCheckbox) 
+        {
+            enableSunlightCheckbox.addEventListener('change', function() {
+                if (!this.checked) 
+                {
+                    // 如果禁用阳光模块，清除所有存在的阳光
+                    clearAllSunlights();
+                }
+            });
+        }
+    }
+</script>
+</body>
+</html>

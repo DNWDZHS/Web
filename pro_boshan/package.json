@@ -5,7 +5,8 @@
   "main": "./server/server.js",
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1",
-    "start": "node ./server/server.js"
+    "start": "node ./server/server.js",
+    "start:debug": "cross-env DEBUG=true node server/server.js"
   },
   "repository": {
     "type": "git",
@@ -16,5 +17,12 @@
   "bugs": {
     "url": "https://github.com/DNWDZHS/Web/issues"
   },
-  "homepage": "https://github.com/DNWDZHS/Web#readme"
+  "homepage": "https://github.com/DNWDZHS/Web#readme",
+
+  "dependencies": {
+    "express": "^5.1.0"
+  },
+  "devDependencies": {
+    "cross-env": "^10.0.0"
+  }
 }
