@@ -4,7 +4,7 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
 
-     <!-- 添加一个简单的 favicon -->
+     <!-- 添加一个简单的缩略图标 favicon -->
      <link rel="icon" href="data:image/svg+xml,<svg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 100 100%22><text y=%22.9em%22 font-size=%2290%22>☸</text></svg>">
      
     <title>Cyber Muyu</title>
@@ -41,14 +41,7 @@
             letter-spacing: 2px;
         }
         
-        .subtitle {
-            font-size: 1.2rem;
-            margin-bottom: 30px;
-            color: #ffd700;
-            opacity: 0.9;
-        }
-        
-        /* 确保interactive-area允许子元素溢出 */
+        /* 确保interactive-area允许子元素溢出, 主要用于限制阳光生成范围 */
         .interactive-area {
             position: relative;
             width: 100%;
@@ -60,6 +53,7 @@
             overflow: visible; /* 允许子元素溢出 */
         }
         
+        /* 木鱼图标及经文选择按钮 */
         .image-container {
            position: relative;
            width: 300px; /* 固定显示区域大小 */
@@ -79,16 +73,12 @@
            object-fit: contain; /* 图片按比例缩放 */
         }
 
+        /* 添加了active类的image-container元素 */
         .image-container.active {
             transform: scaleX(1.3) scaleY(0.7);
         }
         
-        .boshan-image {
-            width: 100%;
-            height: 100%;
-            object-fit: contain;
-        }
-        
+        /* 用于功德+1的效果 */
         .merit-text {
             position: absolute;
             left: 0;
@@ -105,6 +95,7 @@
             opacity: 1;
         }
         
+        /* 点击后显示经文的区域 */
         .moral-control-area {
             position: absolute;
             top: 0;
@@ -126,42 +117,7 @@
             background-size: contain; /* 图片等比例适应显示范围 */
             cursor: pointer;
         }
-        
-        /* 确保新的图标样式不会受到其他样式的影响 */
-        .originSun:hover {
-            transform: none; /* 移除悬停放大效果 */
-            filter: none; /* 移除悬停时的阴影效果 */
-        }
 
-        /* 文本选择容器 - 放置在木鱼右侧 */
-        .text-selector-container {
-           position: absolute;
-           right: 20px; /* 距离右侧边缘20px */
-           top: 50%;
-           transform: translateY(-50%);
-           display: flex;
-           flex-direction: column;
-           align-items: flex-start;
-           background: rgba(255, 255, 255, 0.85);
-           border-radius: 10px;
-           padding: 15px;
-           box-shadow: 0 4px 15px rgba(0, 0, 0, 0.2);
-           z-index: 1000; /* 确保在最上层 */
-           min-width: 250px;
-           max-width: calc(100% - 40px); /* 防止在小屏幕上溢出 */
-        }
-
-        /* 标签样式 */
-        .text-selector-label {
-            font-family: 'SimSun', 'Microsoft YaHei', sans-serif;
-            font-size: 1.1rem;
-            color: #5d4037;
-            margin-bottom: 8px;
-            font-weight: bold;
-            text-shadow: 1px 1px 2px rgba(0,0,0,0.1);
-        }
-
-        /* 文本选择器 */
         /* 经文选择按钮 - 固定在木鱼图片右下角 */
         .scripture-toggle-btn {
             position: absolute;
@@ -192,7 +148,7 @@
             transform: scale(0.95);
         }
 
-        /* 弹出框覆盖层 - 全屏半透明背景 */
+        /* 弹出框覆盖层 - 全屏半透明背景, 用作选择经文功能 */
         .scripture-popup {
             position: fixed;
             top: 0;
@@ -318,6 +274,226 @@
 
         .popup-btn:hover {
             background: linear-gradient(to bottom, #ffd700, #d4af37);
+        }
+
+        /* 历史评论按钮样式 */
+        .popup-footer .history-btn {
+            background: rgba(30, 50, 80, 0.7);
+            color: #ffd700;
+            border: 1px solid rgba(255, 215, 0, 0.3);
+            padding: 8px 12px;
+            border-radius: 6px;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            gap: 6px;
+            font-family: 'Microsoft YaHei', sans-serif;
+            font-size: 0.95rem;
+            transition: all 0.2s ease;
+            margin-right: auto; /* 推到左侧 */
+        }
+        
+        .popup-footer .history-btn:hover {
+            background: rgba(40, 60, 90, 0.8);
+            border-color: #ffd700;
+            transform: translateY(-1px);
+        }
+        
+        .popup-footer .history-btn svg {
+            vertical-align: middle;
+        }
+        
+        /* 历史评论弹窗样式 */
+        .history-comments-popup {
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            z-index: 2000;
+        }
+        
+        .popup-overlay {
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background-color: rgba(0, 0, 0, 0.7);
+            z-index: -1;
+        }
+        
+        .history-popup-content {
+            background: linear-gradient(135deg, #2c3e50, #1a1a2e);
+            border-radius: 12px;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.5);
+            max-width: 90%;
+            width: 600px;
+            max-height: 90vh;
+            overflow: hidden;
+            display: flex;
+            flex-direction: column;
+        }
+        
+        .history-popup-content .popup-header {
+            padding: 15px 20px;
+            border-bottom: 1px solid rgba(255, 215, 0, 0.2);
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            background: rgba(0, 0, 0, 0.2);
+        }
+        
+        .history-popup-content .popup-header h3 {
+            color: #ffd700;
+            font-size: 1.2rem;
+            margin: 0;
+            font-family: 'SimSun', 'Microsoft YaHei', sans-serif;
+        }
+        
+        .history-popup-content .popup-body {
+            padding: 20px;
+            overflow-y: auto;
+            max-height: calc(90vh - 140px);
+        }
+        
+        .history-popup-content .current-line-preview {
+            margin-bottom: 15px;
+            padding: 10px;
+            background: rgba(0, 0, 0, 0.3);
+            border-radius: 6px;
+            border-left: 3px solid #ffd700;
+        }
+        
+        .history-popup-content .current-line-preview p {
+            color: #e0e0e0;
+            margin: 5px 0 0 0;
+            font-family: 'SimSun', 'Microsoft YaHei', sans-serif;
+            font-size: 1.05rem;
+            line-height: 1.4;
+        }
+        
+        .history-selector {
+            margin: 15px 0;
+        }
+        
+        .history-selector label {
+            display: block;
+            margin-bottom: 5px;
+            color: #ffd700;
+            font-weight: bold;
+        }
+        
+        .history-select {
+            width: 100%;
+            padding: 8px 12px;
+            border-radius: 6px;
+            border: 1px solid rgba(255, 215, 0, 0.3);
+            background: rgba(40, 50, 70, 0.8);
+            color: #ffffff;
+            font-family: 'Microsoft YaHei', sans-serif;
+            font-size: 1rem;
+        }
+        
+        .comment-display-area {
+            margin-top: 20px;
+            padding: 15px;
+            background: rgba(0, 0, 0, 0.3);
+            border-radius: 8px;
+            border-left: 3px solid #4a6fa5;
+        }
+        
+        .comment-meta {
+            display: flex;
+            justify-content: space-between;
+            margin-bottom: 8px;
+            font-size: 0.85rem;
+            color: #aaa;
+        }
+
+        /* 历史评论弹窗元数据样式 */
+        .comment-meta-info {
+            display: block;
+            margin-top: 4px;
+            color: #aaa;
+            font-size: 0.8rem;
+            font-style: italic;
+        }
+        
+        .comment-time {
+            color: #ffd700;
+            font-weight: bold;
+            font-size: 0.95rem;
+        }
+        
+        .comment-content {
+            color: #e0e0e0;
+            line-height: 1.5;
+            font-family: 'Microsoft YaHei', sans-serif;
+            font-size: 1.05rem;
+            min-height: 80px;
+            word-wrap: break-word;
+        }
+        
+        .history-popup-content .popup-footer {
+            padding: 15px 20px;
+            border-top: 1px solid rgba(255, 215, 0, 0.2);
+            background: rgba(0, 0, 0, 0.2);
+            display: flex;
+            justify-content: flex-end;
+        }
+        
+        .history-popup-content .close-popup {
+            background: none;
+            border: none;
+            color: #ffd700;
+            font-size: 1.5rem;
+            width: 30px;
+            height: 30px;
+            cursor: pointer;
+            position: relative;
+            top: -5px;
+        }
+        
+        .history-popup-content .close-popup:hover {
+            color: #ff6b6b;
+        }
+        
+        .popup-footer-buttons {
+            display: flex;
+            gap: 10px;
+        }
+        
+        /* 弹窗动画 */
+        @keyframes popupFadeIn {
+            from {
+                opacity: 0;
+                transform: translateY(20px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+        
+        .history-popup-content {
+            animation: popupFadeIn 0.3s ease-out forwards;
+        }
+        
+        /* 响应式设计 */
+        @media (max-width: 768px) {
+            .history-popup-content {
+                width: 95%;
+                margin: 10px;
+            }
+            
+            .popup-footer .history-btn {
+                font-size: 0.85rem;
+                padding: 6px 10px;
+            }
         }
 
         /* 加载指示器 */
@@ -689,8 +865,49 @@
                     </div>
                 </div>
                 <div class="popup-footer">
-                    <button class="action-btn secondary-btn" id="cancelCommentBtn">取消</button>
-                    <button class="action-btn primary-btn" id="saveCommentBtn">保存评论</button>
+                    <button class="action-btn history-btn" id="viewHistoryBtn">
+                        <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" viewBox="0 0 16 16">
+                            <path d="M8 15A7 7 0 1 1 8 1a7 7 0 0 1 0 14zm0 1A8 8 0 1 0 8 0a8 8 0 0 0 0 16z"/>
+                            <path d="M7.002 11a1 1 0 1 1 2 0 1 1 0 0 1-2 0z"/>
+                            <path d="M8 3.5a.5.5 0 0 1 .5.5v4a.5.5 0 0 1-.5.5H7a.5.5 0 0 1 0-1h.5V4.5a.5.5 0 0 1 .5-.5z"/>
+                        </svg>
+                        查看历史评论
+                    </button>
+                    <div class="popup-footer-buttons">
+                        <button class="action-btn secondary-btn" id="cancelCommentBtn">取消</button>
+                        <button class="action-btn primary-btn" id="saveCommentBtn">保存评论</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- 历史评论弹窗 -->
+        <div class="history-comments-popup" id="historyCommentsPopup" style="display: none;">
+            <div class="popup-overlay"></div>
+            <div class="history-popup-content">
+                <div class="popup-header">
+                    <h3>文件历史评论 - <span id="historyFileInfo">文件名</span></h3>
+                    <button class="close-popup" id="closeHistoryPopup">&times;</button>
+                </div>
+                <div class="popup-body">
+                    <div class="history-selector">
+                        <label for="commentHistorySelect">选择历史记录:</label>
+                        <select id="commentHistorySelect" class="history-select">
+                            <option value="">-- 选择一个历史记录 --</option>
+                        </select>
+                    </div>
+                    <div class="comment-display-area">
+                        <div class="comment-meta">
+                            <span class="comment-time" id="commentTimeDisplay">2026-01-26 09:48:00</span>
+                            <span class="comment-meta-info" id="commentMetaInfo">行: 25 | 创建于: 2026-01-26 09:45:55</span>
+                        </div>
+                        <div class="comment-content" id="commentContentDisplay">
+                            请选择一个历史评论查看内容
+                        </div>
+                    </div>
+                </div>
+                <div class="popup-footer">
+                    <button class="action-btn secondary-btn" id="closeHistoryBtn">关闭</button>
                 </div>
             </div>
         </div>
@@ -723,19 +940,6 @@
             <button class="action-btn" id="clickBtn">敲</button>
         </div>
         
-        <div class="instructions">
-            <p><strong>功能说明</strong></p>
-            <ol>
-                <li>每次点击按钮会触发图片形变动画和音效</li>
-                <li>在剪纸图片左下角生成固定文本"功德+1"</li>
-                <li>点击后0.5秒从博山炉左侧生成阳光图片</li>
-                <li>阳光图片会随机移动并在3-5秒后消失</li>
-                <li>点击阳光图片会播放音效并移动到初始阳光图标，显示一条经文</li>
-                <li>阳光图片移动到初始阳光图标时会生成"道德+1"文本</li>
-                <li>点击阳光图片显示道德经内容</li>
-            </ol>
-        </div>
-        
         <div class="footer">
             <p>版权所有 DNWDZHS </p>
         </div>
@@ -748,7 +952,13 @@
         sunSound: "audio/Sun.mp3"
     };
 
-    
+    // 前端调试模式, 在URL后跟"?debug=true"开启
+    const debugMode = new URLSearchParams(window.location.search).get('debug') === 'true';
+    function debugLog(...args) {
+        if (debugMode) {
+            console.log('[DEBUG]', ...args);
+        }
+    }
 
     // 全局变量
     let  g_sunlightPool;            // 阳光对象池
@@ -1299,6 +1509,216 @@
                 showTemporaryMessage(errorMessage, 'error', { duration: 6000 });
                 throw error; // 重新抛出错误以便调用者处理
             }
+        }
+
+        // 添加查看历史评论按钮事件监听
+        const viewHistoryBtn = document.getElementById('viewHistoryBtn');
+        console.log("binding viewHistoryBtn");
+        if (viewHistoryBtn) {
+            viewHistoryBtn.addEventListener('click', async () => {
+                console.log("clicked viewHistoryBtn");
+            if (!g_currentScriptureFile) {
+                showTemporaryMessage('请先选择一个经文文件', 'warning');
+                return;
+            }
+        
+            // 1. 保存加载消息元素的引用
+            let loadingMessageElement = null;
+
+            try {
+                // 显示加载状态
+                showTemporaryMessage('加载历史评论中...', 'info', { 
+                    duration: 0,
+                    allowHTML: false
+                });
+            
+                // 2. 获取最新添加的加载消息元素
+                const tempContainer = document.getElementById('temporary-messages-container');
+                if (tempContainer) {
+                    loadingMessageElement = tempContainer.lastElementChild;
+                }
+            
+                // 3. 修复模板字符串（移除 $ 和{之间的空格）
+                const fileNameWithoutExt = g_currentScriptureFile.replace(/\.txt $ /, '');
+                const response = await fetch(`/api/get-comments/${encodeURIComponent(g_currentScriptureFile)}`, {
+                    headers: {
+                        'Accept': 'application/json',
+                        'X-Requested-With': 'XMLHttpRequest'
+                    }
+                });
+            
+                if (!response.ok) {
+                    throw new Error(`HTTP  ${response.status}:  ${response.statusText}`);
+                }
+            
+                const contentType = response.headers.get('content-type');
+                if (!contentType || !contentType.includes('application/json')) {
+                    throw new Error('服务器返回了非JSON格式的响应');
+                }
+            
+                const data = await response.json();
+            
+                if (!data.success) {
+                    throw new Error(data.message || '获取评论失败');
+                }
+            
+                // 4. 安全移除加载消息（而不是整个容器）
+                if (loadingMessageElement && loadingMessageElement.parentNode) {
+                    // 模拟点击关闭按钮来触发内置的移除逻辑
+                    const closeBtn = loadingMessageElement.querySelector('button');
+                    if (closeBtn) {
+                        closeBtn.click();
+                    }
+                }
+            
+                // 显示历史评论弹窗
+                showHistoryCommentsPopup(fileNameWithoutExt, data.comments);
+            
+            } catch (error) {
+                console.error('加载历史评论失败:', error);
+
+                // 5. 同样安全移除加载消息
+                if (loadingMessageElement && loadingMessageElement.parentNode) {
+                    const closeBtn = loadingMessageElement.querySelector('button');
+                    if (closeBtn) {
+                        closeBtn.click();
+                    }
+                }
+            
+                showTemporaryMessage('加载历史评论失败: ' + error.message, 'error');
+            }
+        });
+        }
+
+        // 添加关闭历史弹窗按钮事件监听
+        const closeHistoryPopupBtn = document.getElementById('closeHistoryPopup');
+        const closeHistoryBtn = document.getElementById('closeHistoryBtn');
+
+        if (closeHistoryPopupBtn) {
+            closeHistoryPopupBtn.addEventListener('click', closeHistoryCommentsPopup);
+        }
+
+        if (closeHistoryBtn) {
+            closeHistoryBtn.addEventListener('click', closeHistoryCommentsPopup);
+        }
+
+        // 添加选择历史评论事件监听
+        const commentHistorySelect = document.getElementById('commentHistorySelect');
+        if (commentHistorySelect) {
+            commentHistorySelect.addEventListener('change', function() {
+                const selectedId = this.value;
+                if (selectedId) {
+                    displaySelectedComment(selectedId);
+                }
+            });
+        }
+    }
+
+    // 显示历史评论弹窗 - 按文件记录
+    function showHistoryCommentsPopup(fileName, comments) {
+        const popup = document.getElementById('historyCommentsPopup');
+        if (!popup) return;
+
+        // 设置文件信息
+        document.getElementById('historyFileInfo').textContent = fileName;
+
+        // 填充下拉框
+        const selectElement = document.getElementById('commentHistorySelect');
+        selectElement.innerHTML = '<option value="">-- 选择一个历史记录 --</option>';
+
+        if (comments.length === 0) {
+            showTemporaryMessage('当前文件暂无历史评论', 'info', { duration: 2000 });
+            selectElement.disabled = true;
+            document.getElementById('commentContentDisplay').textContent = '当前文件没有历史评论记录';
+            document.getElementById('commentTimeDisplay').textContent = '';
+            document.getElementById('commentMetaInfo').textContent = '';
+        } else {
+            selectElement.disabled = false;
+
+            comments.forEach(comment => {
+                const option = document.createElement('option');
+                const displayTime = formatCommentTime(comment.timestamp);
+                option.value = comment.id;
+                option.textContent = ` ${displayTime} -  ${comment.comment.substring(0, 30)} ${comment.comment.length > 30 ? '...' : ''}`;
+                option.dataset.comment = JSON.stringify(comment);
+                selectElement.appendChild(option);
+            });
+
+            // 默认选择第一条
+            selectElement.value = comments[0].id;
+            displaySelectedComment(comments[0].id);
+        }
+
+        // 显示弹窗
+        popup.style.display = 'flex';
+
+        // 添加ESC键关闭支持
+        document.addEventListener('keydown', handleHistoryEscapeKey);
+    }
+
+    // 显示选中的评论
+    function displaySelectedComment(commentId) {
+        const selectElement = document.getElementById('commentHistorySelect');
+        const selectedOption = Array.from(selectElement.options).find(opt => opt.value === commentId);
+        
+        if (selectedOption && selectedOption.dataset.comment) {
+            try {
+                const comment = JSON.parse(selectedOption.dataset.comment);
+                document.getElementById('commentContentDisplay').textContent = comment.comment || '无评论内容';
+                document.getElementById('commentTimeDisplay').textContent = formatCommentTime(comment.timestamp);
+
+                // 显示元数据
+                let metaText = `创建于:  ${formatCommentTime(comment.createdAt)}`;
+                if (comment.lineNumber) {
+                    metaText += ` | 行:  ${comment.lineNumber}`;
+                }
+                if (comment.lineContent) {
+                    metaText += ` | 内容:  ${comment.lineContent.substring(0, 50)} ${comment.lineContent.length > 50 ? '...' : ''}`;
+                }
+                document.getElementById('commentMetaInfo').textContent = metaText;
+            } catch (e) {
+                console.error('解析评论数据失败:', e);
+                document.getElementById('commentContentDisplay').textContent = '评论内容加载失败';
+                document.getElementById('commentTimeDisplay').textContent = '未知时间';
+                document.getElementById('commentMetaInfo').textContent = '元数据加载失败';
+            }
+        }
+    }
+
+    // 格式化评论时间
+    function formatCommentTime(timestamp) {
+        try {
+            const date = new Date(timestamp);
+            if (isNaN(date.getTime())) return '未知时间';
+
+            const year = date.getFullYear();
+            const month = (date.getMonth() + 1).toString().padStart(2, '0');
+            const day = date.getDate().toString().padStart(2, '0');
+            const hours = date.getHours().toString().padStart(2, '0');
+            const minutes = date.getMinutes().toString().padStart(2, '0');
+
+            return ` ${year}- ${month}- ${day}  ${hours}: ${minutes}`;
+        } catch (e) {
+            console.error('格式化时间出错:', e);
+            return '未知时间';
+        }
+    }
+
+    // 关闭历史评论弹窗
+    function closeHistoryCommentsPopup() {
+        const popup = document.getElementById('historyCommentsPopup');
+        if (popup) {
+            popup.style.display = 'none';
+        }
+
+        // 移除ESC键监听
+        document.removeEventListener('keydown', handleHistoryEscapeKey);
+    }
+
+    // 处理ESC键
+    function handleHistoryEscapeKey(e) {
+        if (e.key === 'Escape') {
+            closeHistoryCommentsPopup();
         }
     }
 // --------------------------- Comment end------------------------ //
