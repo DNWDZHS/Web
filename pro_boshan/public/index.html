@@ -186,6 +186,7 @@
             flex-direction: column;
         }
 
+        /* 后代选择器 */
         .scripture-popup.active .popup-content {
             transform: translateY(0);
         }
@@ -849,12 +850,12 @@
         <div class="comment-popup" id="commentPopup">
             <div class="popup-content">
                 <div class="popup-header">
-                    <h3>添加评论 - <span id="commentLineInfo">第25行</span></h3>
+                    <h3>记录一下~ </h3>
                     <button class="close-popup" id="closeCommentPopup">&times;</button>
                 </div>
                 <div class="popup-body">
                     <div class="current-line-preview">
-                        <strong>当前行内容:</strong>
+                        <strong>当前行:<span id="TextLine"></span></strong>
                         <p id="currentLineContent">色不异空，空不异色</p>
                     </div>
                     <div class="comment-input-area">
@@ -933,7 +934,7 @@
         
         <div class="control-panel">
             <div class="sunlight-control">
-                <input type="checkbox" id="enableSunlight" checked>
+                <input type="checkbox" id="enableSunlight">
                 <label for="enableSunlight">启用阳光模块</label>
             </div>
             <div class="counter">已获得道德: <span id="g_moralCounter">0</span></div>
@@ -963,7 +964,7 @@
     // 全局变量
     let  g_sunlightPool;            // 阳光对象池
     let  g_originSunElement;        // 阳光回归位置图标
-    let  g_currentTextIndex = 0;    // 行号
+    let  g_currentTextIndex = 0;    // 行号 [0, Scriptures.length)
     let  g_moralCounter     = 0;    // 功德计数
 
     let scriptureToggleBtn = null;
@@ -1411,10 +1412,10 @@
 
         // 更新弹出框内容
         function updateCommentPopupContent() {
-            const currentLineIndex = g_currentTextIndex > 0 ? g_currentTextIndex - 1 : 0;
+            const currentLineIndex = g_currentTextIndex > 0 ? g_currentTextIndex : 0;
             const currentLineContent = Scriptures[currentLineIndex] || '';
 
-            document.getElementById('commentLineInfo').textContent = `第${currentLineIndex + 1}行`;
+            document.getElementById('TextLine').textContent = `${currentLineIndex + 1}`;
             document.getElementById('currentLineContent').textContent = currentLineContent;
         }
 
@@ -1513,7 +1514,6 @@
 
         // 添加查看历史评论按钮事件监听
         const viewHistoryBtn = document.getElementById('viewHistoryBtn');
-        console.log("binding viewHistoryBtn");
         if (viewHistoryBtn) {
             viewHistoryBtn.addEventListener('click', async () => {
                 console.log("clicked viewHistoryBtn");
@@ -1969,7 +1969,6 @@ class ObjectPool
         // DOM子元素本身分发事件才能收到
         const ShowTextEvent = new Event('ShowScriptures');
         const TextDisplay = document.getElementById('TextDisplay');
-        console.log("before dispatch event");
         TextDisplay.dispatchEvent(ShowTextEvent);
         requestAnimationFrame(animate);
     }
@@ -2026,11 +2025,11 @@ class ObjectPool
         if (!Scriptures || Scriptures.length === 0)
             return;
 
-        // 逐行显示
-        TextDisplay.textContent = Scriptures[g_currentTextIndex];
-
         // 更新索引，到达末尾时重置
         g_currentTextIndex = (g_currentTextIndex + 1) % Scriptures.length;
+
+        // 逐行显示
+        TextDisplay.textContent = Scriptures[g_currentTextIndex];
 
         // 添加显示动画
         TextDisplay.style.opacity = '0';
@@ -2066,7 +2065,6 @@ class ObjectPool
         else // 阳光模块不启用，敲击直接显示经文
         {
             const ShowTextEvent = new Event('ShowScriptures');
-            console.log("before dispatch event");
             const TextDisplay = document.getElementById('TextDisplay');
             TextDisplay.dispatchEvent(ShowTextEvent);
         }
@@ -2330,6 +2328,14 @@ function showTemporaryMessage(message, type = 'info', options = {}) {
         
         // 事件绑定
         clickBtn.addEventListener('click', handleClick);
+        // 处理键盘（空格键 or 回车键）敲木鱼
+        clickBtn.addEventListener('keydown', (event) => {
+          if (event.code === 'Space' || event.code === 'Enter') {
+            // 阻止空格键滚动页面的默认行为
+            event.preventDefault();
+            handleClick(event);
+          }
+        });
         TextDisplay.addEventListener('ShowScriptures', () => showScriptures());
         
         // 初始化文本显示模块
