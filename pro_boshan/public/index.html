@@ -17,54 +17,85 @@
         
         body {
             font-family: 'Microsoft YaHei', Arial, sans-serif;
-            background: linear-gradient(135deg, #1a2a6c, #b21f1f, #1a2a6c);
-            color: #fff;
+            background-image: url('background/bkg1.png');
+            background-size: cover;
+            background-position: center;
+            background-repeat: no-repeat;
+            background-attachment: fixed;
+            color: #e0f2e9; /* 竹青文字，比纯白更柔和 */
             min-height: 100vh;
             display: flex;
             flex-direction: column;
+            justify-content: center; /* 垂直居中主体内容 */
             align-items: center;
-            padding: 20px;
+            padding: 10px;
             overflow-x: hidden;
+            background-color: #334d41; /* 竹青底色，防止图片加载时闪白 */
         }
-        
+
+        /* 给容器添加半透明背景色，确保内容清晰可见 */
         .container {
             max-width: 800px;
             width: 100%;
             text-align: center;
-            margin-top: 20px;
+            margin: 0 auto;
+            background-color: rgba(139, 254, 189, 0.05); /* 竹青底色 */
+            backdrop-filter: blur(4px); /* 毛玻璃效果（现代浏览器支持） */
+            border-radius: 10px;
+            box-shadow: 0 4px 20px rgba(0, 30, 60, 0.4); /* 青灰阴影 */
+            padding: 16px;
+            border: 1px solid rgba(70, 130, 180, 0.3); /* 竹青边框 */
+            max-height: calc(100vh - 40px);
+            overflow-y: auto;
         }
         
         .title {
             font-size: 2.5rem;
             margin: 20px 0;
-            text-shadow: 0 0 10px rgba(255, 215, 0, 0.8);
+            color: #bfe3d2; /* 竹青文字 */
+            text-shadow: 0 0 8px rgba(100, 180, 180, 0.7); /* 青玉光晕 */
             letter-spacing: 2px;
+            font-family: 'STKaiti', 'KaiTi', 'SimSun', serif; /* 书法字体 */
         }
         
         /* 确保interactive-area允许子元素溢出, 主要用于限制阳光生成范围 */
         .interactive-area {
             position: relative;
             width: 100%;
-            height: 400px;
+            height: auto; /* 改为自适应高度 */
+            min-height: 280px; /* 保证最小高度 */
+            max-height: 320px; /* 限制最大高度 */
+            padding: 10px 0;
             display: flex;
+            flex-direction: column; /* 子元素垂直排列 */
+            align-items: center; /* 水平居中 */
             justify-content: center;
-            align-items: center;
-            margin-bottom: 20px;
-            overflow: visible; /* 允许子元素溢出 */
+            margin-bottom: 16px;
+            padding-top: 70px; /* ≈ 高度(40px图标+上下padding)+安全余量 */
+            box-sizing: border-box;
+            overflow: visible;
+            /* 添加山水层次感 */
+            background: linear-gradient(to bottom, 
+                rgba(10, 30, 50, 0.1) 0%, 
+                rgba(10, 30, 50, 0.3) 100%);
         }
         
         /* 木鱼图标及经文选择按钮 */
         .image-container {
-           position: relative;
-           width: 300px; /* 固定显示区域大小 */
-           height: 300px; /* 固定显示区域大小，宽高相等 */
-           overflow: hidden; /* 防止内容溢出 */
-           display: flex;
-           justify-content: center;
-           align-items: center;
-           cursor: pointer;
-           transition: transform 0.2s cubic-bezier(0.34, 1.56, 0.64, 1);
-           transform-origin: center; /* 确保变形围绕中心点 */
+            position: relative;
+            width: 300px;
+            height: 300px;
+            overflow: hidden;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            cursor: pointer;
+            transition: transform 0.2s cubic-bezier(0.34, 1.56, 0.64, 1);
+            transform-origin: center;
+            /* 木鱼容器边框 */
+            /* border: 1px solid rgba(70, 150, 150, 0.4); */
+            /* border-radius: 50%; */
+            box-shadow: 0 0 15px rgba(30, 80, 100, 0.3);
         }
 
         .image-container img {
@@ -83,15 +114,16 @@
             position: absolute;
             left: 0;
             bottom: 0;
-            color: #ffd700;
+            color: #a8d8b9; /* 竹青色 */
             font-weight: bold;
             font-size: 1.5rem;
-            text-shadow: 0 0 5px rgba(255, 215, 0, 0.8);
+            text-shadow: 0 0 6px rgba(100, 180, 180, 0.8); /* 青玉光晕 */
             opacity: 0;
             transition: opacity 0.3s ease;
         }
         
         .merit-text.show {
+            top: 0;
             opacity: 1;
         }
         
@@ -102,20 +134,25 @@
             left: 50%;
             transform: translateX(-50%);
             width: 90%;
-            max-width: 400px;
+            width: 100%;
+            max-width: 100%;
+            box-sizing: border-box;
             display: flex;
-            justify-content: space-between;
+            justify-content: flex-start;
             align-items: center;
+            gap: 12px;
             padding: 10px;
             z-index: 15;
+            /* 背景和边框可保持透明 */
         }
 
         .originSun {
-            width: 40px; /* 固定宽度 */
-            height: 40px; /* 固定高度 */
-            background: url('images/Sunlight.png') no-repeat center center; /* 使用您指定的图片 */
-            background-size: contain; /* 图片等比例适应显示范围 */
+            width: 40px;
+            height: 40px;
+            background: url('images/Sunlight.png') no-repeat center center;
+            background-size: contain;
             cursor: pointer;
+            filter: drop-shadow(0 0 3px rgba(255, 215, 0, 0.5)); /* 保留阳光暖色但降低饱和度 */
         }
 
         /* 经文选择按钮 - 固定在木鱼图片右下角 */
@@ -126,22 +163,23 @@
             width: 45px;
             height: 45px;
             border-radius: 50%;
-            background: rgba(212, 175, 55, 0.85);
-            border: 2px solid #8b7355;
-            color: #3e2723;
+            background: radial-gradient(circle, #5a6b7c 0%, #3a4b5c 100%); /* 铜青渐变 */
+            border: 2px solid #7a9bae; /* 钢青边框 */
+            color: #c1e1c1; /* 月白 */
             font-size: 1.4rem;
             display: flex;
             align-items: center;
             justify-content: center;
             cursor: pointer;
-            box-shadow: 0 3px 8px rgba(0, 0, 0, 0.3);
+            box-shadow: 0 3px 8px rgba(0, 30, 60, 0.4);
             z-index: 20;
             transition: all 0.2s ease;
         }
 
         .scripture-toggle-btn:hover {
-            background: rgba(212, 175, 55, 1);
+            background: radial-gradient(circle, #6a7b8c 0%, #4a5b6c 100%);
             transform: scale(1.05);
+            box-shadow: 0 4px 12px rgba(0, 50, 100, 0.5);
         }
 
         .scripture-toggle-btn:active {
@@ -172,13 +210,13 @@
 
         /* 弹出框内容 - 适中大小，适合移动设备 */
         .popup-content {
-            background: linear-gradient(145deg, #2c1b0d, #4a3522);
+            background: linear-gradient(145deg, #1a2a3a, #2a3a4a); /* 青瓷渐变 */
+            border: 2px solid #7a9bae; /* 钢青边框 */
+            box-shadow: 0 10px 30px rgba(0, 30, 60, 0.6);
             width: 90%;
             max-width: 400px;
             border-radius: 16px;
             overflow: hidden;
-            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.5);
-            border: 2px solid #d4af37;
             transform: translateY(20px);
             transition: transform 0.3s ease;
             max-height: 85vh;
@@ -191,19 +229,25 @@
             transform: translateY(0);
         }
 
+        /* ===== 弹窗系统：青瓷质感 ===== */
+        .scripture-popup, .comment-popup, .history-comments-popup {
+            background: rgba(5, 20, 40, 0.85); /* 深青底 */
+            backdrop-filter: blur(3px);
+        }
+
         /* 弹出框头部 */
         .popup-header {
             padding: 15px 20px;
-            background: rgba(212, 175, 55, 0.15);
-            border-bottom: 1px solid #8b7355;
+            background: rgba(30, 60, 90, 0.4);
+            border-bottom: 1px solid #7a9bae;
             display: flex;
             justify-content: space-between;
             align-items: center;
         }
 
         .popup-header h3 {
-            color: #ffd700;
-            font-family: 'SimSun', 'Microsoft YaHei', sans-serif;
+            color: #a8d8b9; /* 竹青 */
+            font-family: 'STKaiti', 'KaiTi', serif;
             font-size: 1.3rem;
             margin: 0;
         }
@@ -211,7 +255,7 @@
         .close-popup {
             background: none;
             border: none;
-            color: #ffd700;
+            color: #a8d8b9;
             font-size: 1.8rem;
             width: 36px;
             height: 36px;
@@ -224,7 +268,7 @@
         }
 
         .close-popup:hover {
-            background: rgba(212, 175, 55, 0.2);
+            background: rgba(100, 180, 180, 0.2);
         }
 
         /* 弹出框主体 */
@@ -238,12 +282,12 @@
         .mobile-selector {
             width: 100%;
             padding: 14px;
-            background: rgba(255, 255, 255, 0.95);
-            border: 2px solid #8b7355;
+            background: rgba(25, 50, 80, 0.8);
+            border: 2px solid #7a9bae;
             border-radius: 12px;
             font-family: 'SimSun', 'Microsoft YaHei', sans-serif;
             font-size: 1.15rem;
-            color: #3e2723;
+            color: #e6f4f1;
             appearance: none;
             background-image: url("data:image/svg+xml;charset=utf-8,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24'%3E%3Cpath         fill='%236d4c41' d='M7 10l5 5 5-5z'/%3E%3C/svg%3E");
             background-repeat: no-repeat;
@@ -269,19 +313,20 @@
             width: 100%;
             padding: 14px;
             font-size: 1.2rem;
-            background: linear-gradient(to bottom, #d4af37, #b8972a);
-            color: #333;
+            background: linear-gradient(to bottom, #5a7a8c, #3a5a6c); /* 青铜渐变 */
+            color: #e6f4f1;
+            border: 1px solid #7a9bae;
         }
 
         .popup-btn:hover {
-            background: linear-gradient(to bottom, #ffd700, #d4af37);
+            background: linear-gradient(to bottom, #6a8a9c, #4a6a7c);
         }
 
         /* 历史评论按钮样式 */
         .popup-footer .history-btn {
-            background: rgba(30, 50, 80, 0.7);
-            color: #ffd700;
-            border: 1px solid rgba(255, 215, 0, 0.3);
+            background: rgba(40, 70, 100, 0.7);
+            color: #a8d8b9;
+            border: 1px solid rgba(100, 180, 180, 0.4);
             padding: 8px 12px;
             border-radius: 6px;
             cursor: pointer;
@@ -295,8 +340,8 @@
         }
         
         .popup-footer .history-btn:hover {
-            background: rgba(40, 60, 90, 0.8);
-            border-color: #ffd700;
+            background: rgba(50, 80, 110, 0.8);
+            border-color: #a8d8b9;
             transform: translateY(-1px);
         }
         
@@ -328,7 +373,8 @@
         }
         
         .history-popup-content {
-            background: linear-gradient(135deg, #2c3e50, #1a1a2e);
+            background: linear-gradient(135deg, #1a2a3a, #0a1a2a); /* 水墨渐变 */
+            border: 2px solid #7a9bae;
             border-radius: 12px;
             box-shadow: 0 10px 30px rgba(0, 0, 0, 0.5);
             max-width: 90%;
@@ -402,9 +448,9 @@
         .comment-display-area {
             margin-top: 20px;
             padding: 15px;
-            background: rgba(0, 0, 0, 0.3);
+            background: rgba(15, 35, 55, 0.7);
+            border-left: 3px solid #5a7a8c; /* 青铜竖线 */
             border-radius: 8px;
-            border-left: 3px solid #4a6fa5;
         }
         
         .comment-meta {
@@ -419,15 +465,15 @@
         .comment-meta-info {
             display: block;
             margin-top: 4px;
-            color: #aaa;
+            color: #a8b8c8;
             font-size: 0.8rem;
             font-style: italic;
         }
         
         .comment-content {
-            color: #e0e0e0;
+            color: #e6f4f1;
             line-height: 1.5;
-            font-family: 'Microsoft YaHei', sans-serif;
+            font-family: 'STKaiti', 'KaiTi', serif;
             font-size: 1.05rem;
             min-height: 80px;
             text-align: left !important;
@@ -534,14 +580,16 @@
         .Scripture-TextDisplay {
             flex-grow: 1;
             color: #ffd700;
-            font-size: 1.1rem;
-            font-family: 'SimSun', 'Microsoft YaHei', sans-serif;
-            margin-left: 15px;
+            font-size: 1.4rem;
+            font-weight: bold;
+            font-family: 'KaiTi', 'STKaiti', serif;
             line-height: 1.4;
             overflow: hidden;
             text-overflow: ellipsis;
-            max-width: 70%;
-            text-align: right;
+            white-space: nowrap; /* 如果只显示单行，建议加上 */
+            /* text-align: left; /* 左对齐 */
+            text-align: center; /* 水平居中 */
+            text-shadow: 2px 2px 5px rgba(0, 0, 0, 0.6);
         }
 
         .moral-plus {
@@ -566,32 +614,52 @@
         
         .action-btn {
             margin-top: 10px; /* 增加上边距 */
-            background: linear-gradient(to bottom, #ffd700, #ff8c00);
-            color: #333;
+            background: linear-gradient(to bottom, #d6c157, #f5bc41); /* 更浅的佛光金 */
+            color: #2C3E50; /* 深蓝灰色，提供高对比度且视觉舒适 */
             border: none;
-            padding: 12px 30px;
-            font-size: 1.3rem;
+            box-shadow: 0 4px 10px rgba(0, 30, 60, 0.4);
+            padding: 10px 24px;
+            font-size: 1.15rem;
             font-weight: bold;
-            border-radius: 25px;
+            border-radius: 20px;
             cursor: pointer;
-            box-shadow: 0 4px 10px rgba(0, 0, 0, 0.3);
             transition: all 0.2s ease;
         }
         
         .action-btn:hover {
             transform: translateY(-2px);
-            box-shadow: 0 6px 15px rgba(0, 0, 0, 0.4);
+            box-shadow: 0 8px 20px rgba(0, 40, 80, 0.4), inset 0 2px 4px rgba(255, 255, 255, 0.5); /* 添加内部光泽 */
+            background: linear-gradient(to bottom, #fff56f, #ffdd36); /* 轻微提亮 */
+            color: #2C3E50;
         }
         
         .action-btn:active {
             transform: translateY(1px);
-            box-shadow: 0 2px 5px rgba(0, 0, 0, 0.3);
+            box-shadow: 0 2px 5px rgba(0, 30, 60, 0.3);
+        }
+
+        #cancelCommentBtn {
+            background: rgba(235, 240, 245, 0.7); /* 调整为带有浅蓝的米白色，带透明度 */
+            color: #5a5a5a; /* 深灰文字，柔和但可读 */
+            border: 1px solid rgba(130, 135, 145, 0.3); /* 调整为带点蓝色的细边框 */
+            backdrop-filter: blur(2px); /* 可选：毛玻璃效果，更现代 */
+            padding: 8px 16px;
+            font-size: 1rem;
+            border-radius: 6px;
+        }
+
+        #cancelCommentBtn:hover {
+            background: rgba(245, 250, 255, 0.9); /* 悬停时更加亮白并带有一点蓝色 */
+            color: #3a3a3a;
+            border-color: rgba(130, 135, 145, 0.5); /* 增加悬停时边框的蓝色调 */
+            box-shadow: 0 2px 6px rgba(0, 0, 0, 0.1);
         }
         
         .counter {
             margin: 15px 0;
             font-size: 1.2rem;
-            color: #ffd700;
+            color: #c1e1c1; /* 月白 */
+            text-shadow: 0 0 5px rgba(100, 180, 180, 0.5);
             /* 可选：明确显示时的布局（根据实际需求） */
             display: flex;       /* 或 block / inline-flex */
             align-items: center; /* 垂直居中（配合 flex） */
@@ -606,7 +674,8 @@
         .footer {
             margin-top: 30px;
             font-size: 0.9rem;
-            color: rgba(255, 255, 255, 0.7);
+            color: rgba(191, 227, 210, 0.7); /* 竹青半透明 */
+            font-family: 'STKaiti', 'KaiTi', serif;
         }
 
         /* -------- 评论弹出框样式 */
@@ -682,13 +751,13 @@
         }
 
         .comment-input-area textarea {
+            background: rgba(20, 40, 60, 0.7);
+            border: 1px solid rgba(100, 180, 180, 0.4);
+            color: #e6f4f1;
             width: 100%;
             min-height: 100px;
             padding: 12px 15px;
-            border: 1px solid rgba(255, 215, 0, 0.3);
             border-radius: 6px;
-            background: rgba(0, 0, 0, 0.4);
-            color: #ffd700;
             font-family: 'SimSun', 'Microsoft YaHei', sans-serif;
             font-size: 1rem;
             resize: vertical;
@@ -698,8 +767,8 @@
 
         .comment-input-area textarea:focus {
             outline: none;
-            border-color: #ffd700;
-            box-shadow: 0 0 0 2px rgba(255, 215, 0, 0.2);
+            border-color: #a8d8b9;
+            box-shadow: 0 0 0 2px rgba(100, 180, 180, 0.3);
         }
 
         /* 主题输入框特有样式 */
@@ -708,6 +777,17 @@
             max-height: 80px !important; /* 可根据需要调整最大高度 */
             padding: 8px 12px; /* 减少内边距以匹配较小的高度 */
             resize: none; /* 禁止调整大小 */
+        }
+        
+        /* 核心交互按钮（敲击）保留佛光金，但降低饱和度 */
+        #clickBtn {
+            background: linear-gradient(to bottom, #ffe76f, #ffbf36);
+        }
+        
+        #clickBtn:hover {
+            background: linear-gradient(to bottom, #fff56f, #ffdd36); /* 更亮的金色 */
+            transform: translateY(-2px);
+            box-shadow: 0 8px 16px rgba(0, 40, 80, 0.3);
         }
 
         .char-counter {
@@ -783,13 +863,71 @@
         }
 
         @media (max-width: 768px) {
+            body {
+                padding: 8px;
+                font-size: 0.95rem;
+            }
+        
+            .title {
+                font-size: 1.8rem; /* 原 2.5rem → 显著缩小 */
+                margin: 12px 0;
+                letter-spacing: 1px;
+            }
+        
+            .interactive-area {
+                min-height: 220px;
+                max-height: 260px;
+            }
+        
+            .image-container {
+                width: 240px;
+                height: 240px;
+            }
+        
+            .control-panel {
+                gap: 8px; /* 减小按钮间距 */
+            }
+        
+            .action-btn,
+            #cancelCommentBtn {
+                padding: 8px 20px;
+                font-size: 1rem;
+            }
+        
+            .counter {
+                font-size: 1.05rem;
+                margin: 10px 0;
+            }
+        
+            .footer {
+                margin-top: 15px;
+                font-size: 0.8rem;
+            }
+        
+            /* 弹窗也需缩小 */
+            .popup-content,
+            .history-popup-content {
+                max-width: 95%;
+                margin: 8px;
+            }
+        
+            .popup-header h3 {
+                font-size: 1.1rem;
+            }
+        
+            .popup-btn,
+            .mobile-selector {
+                padding: 10px;
+                font-size: 1rem;
+            }
+
             .Scripture-TextDisplay {
                 text-align: center; /* 小屏幕居中对齐，确保短文本可见 */
+                font-size: clamp(0.7rem, 3.5vw, 1.75rem);
                 max-width: 85%; /* 增加宽度，给文字更多空间 */
                 margin: 0 auto; /* 居中显示 */
                 white-space: normal; /* 允许换行 */
                 padding: 5px 10px; /* 添加内边距增加可读性 */
-                background: rgba(0, 0, 0, 0.3); /* 轻微背景提升可读性 */
                 border-radius: 8px;
             }
 
@@ -825,12 +963,22 @@
 
             <div class="image-container" id="MuYu">
                 <img src="images/Boshan.png" alt="木鱼" id="MuYuImage">
-                <div class="merit-text" id="meritText">功德+1</div>
 
                  <!-- 简洁的经文选择按钮 -->
                 <button class="scripture-toggle-btn" id="scriptureToggleBtn">
                     <span class="scripture-icon">📖</span>
                 </button>
+            </div>
+        </div>
+
+        <div class="control-panel">
+            <button class="action-btn" id="clickBtn">敲</button>
+            <div class="sunlight-control">
+                <input type="checkbox" id="enableSunlight">
+                <label for="enableSunlight">启用阳光模块</label>
+            </div>
+            <div id="moralCounterContainer" class="counter hidden">
+                已获得道德: <span id="g_moralCounter">0</span>
             </div>
         </div>
 
@@ -938,17 +1086,6 @@
             </div>
         </div>
         
-        <div class="control-panel">
-            <button class="action-btn" id="clickBtn">敲</button>
-            <div class="sunlight-control">
-                <input type="checkbox" id="enableSunlight">
-                <label for="enableSunlight">启用阳光模块</label>
-            </div>
-            <div id="moralCounterContainer" class="counter hidden">
-                已获得道德: <span id="g_moralCounter">0</span>
-            </div>
-        </div>
-        
         <div class="footer">
             <p>版权所有 DNWDZHS </p>
         </div>
@@ -989,11 +1126,11 @@
 
     // DOM 元素
     const clickBtn = document.getElementById('clickBtn');
-    const MuYu = document.getElementById('MuYu');
-
 
     // 获取木鱼元素
-    const meritText = document.getElementById('meritText');
+    const MuYu = document.getElementById('MuYu');
+    const MuYuImage = document.getElementById('MuYuImage');
+    const MuYuRect = MuYuImage.getBoundingClientRect();
     const originSun = document.getElementById('originSun');
     const TextDisplay = document.getElementById('TextDisplay');
     const enableSunlightCheckbox = document.getElementById('enableSunlight'); // 阳光控制勾选框
@@ -1894,7 +2031,7 @@ class Sunlight
         if (this.timeoutId) clearTimeout(this.timeoutId);
         
         // 创建"道德+1"效果
-        createMoralPlusOne(this.originSunRect.left, this.originSunRect.top);
+        createMoralPlusOne(this.originSunRect.left, this.originSunRect.top-10);
         
         // 开始返回到初始阳光图标的动画
         this.isReturning = true;
@@ -1983,7 +2120,8 @@ class ObjectPool
         moralPlus.style.position = 'absolute';
         moralPlus.style.left = `${x}px`;
         moralPlus.style.top = `${y}px`;
-        moralPlus.style.color = '#4CAF50';
+        moralPlus.style.color = '#F5F5DC'; // Beige-white（米白）
+        moralPlus.style.textShadow = '0 0 4px rgba(0, 0, 0, 0.4)';
         moralPlus.style.fontWeight = 'bold';
         moralPlus.style.fontSize = '18px';
         moralPlus.style.zIndex = '9001';
@@ -2048,17 +2186,6 @@ class ObjectPool
     }
 // --------------------------- sunlight end------------------------ //
 
-
-
-    // 显示功德+1
-    function showMeritText() 
-    {
-        meritText.classList.add('show');
-        setTimeout(() => {
-            meritText.classList.remove('show');
-        }, 800);
-    }
-
     // 显示经文
     function showScriptures() 
     {
@@ -2102,7 +2229,7 @@ class ObjectPool
         }, 100);
         
         // 显示功德+1
-        showMeritText();
+        createMeritPlusOne(MuYuRect.right, MuYuRect.top+30);
         
         // 检查阳光模块是否启用
         if (enableSunlightCheckbox && enableSunlightCheckbox.checked) {
@@ -2115,6 +2242,43 @@ class ObjectPool
             const TextDisplay = document.getElementById('TextDisplay');
             TextDisplay.dispatchEvent(ShowTextEvent);
         }
+    }
+
+    // 创建"功德+1"效果
+    function createMeritPlusOne(x, y) 
+    {
+        const meritPlus = document.createElement('div');
+        meritPlus.textContent = '功德+1';
+        meritPlus.style.position = 'absolute';
+        meritPlus.style.left = `${x}px`;
+        meritPlus.style.top = `${y}px`;
+        meritPlus.style.color = '#FFB90F';
+        meritPlus.style.textShadow = '2px 2px 3px rgba(0, 0, 0, .3)';
+        meritPlus.style.fontWeight = 'bold';
+        meritPlus.style.fontSize = '22px';
+        meritPlus.style.zIndex = '9001';
+        meritPlus.style.pointerEvents = 'none';
+        meritPlus.style.transition = 'all 0.5s ease';
+
+        document.body.appendChild(meritPlus);
+
+        // 上浮动效果
+        let opacity = 1;
+        let posY = y;
+        const animate = () => {
+            posY -= 2;
+            opacity -= 0.02;
+            meritPlus.style.top = `${posY}px`;
+            meritPlus.style.opacity = opacity.toString();
+
+            if (opacity > 0) {
+                requestAnimationFrame(animate);
+            } else {
+                document.body.removeChild(meritPlus);
+            }
+        };
+
+        requestAnimationFrame(animate);
     }
 
 
