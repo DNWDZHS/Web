@@ -198,10 +198,10 @@ app.get('/api/get-reading-progress/:filename', async (req, res) => {
 // 保存评论的API
 app.post('/api/save-comment', async (req, res) => {
     try {
-        const { filename, lineNumber, lineContent, comment, timestamp } = req.body;
+        const { filename, lineNumber, lineContent, theme, comment, timestamp } = req.body;
 
         // 验证必需参数
-        if (!filename || lineNumber === undefined || !lineContent || !comment) {
+        if (!filename || lineNumber === undefined || !lineContent || !theme || !comment) {
             return res.status(400).json({ message: '缺少必需参数' });
         }
 
@@ -210,9 +210,14 @@ app.post('/api/save-comment', async (req, res) => {
             return res.status(400).json({ message: 'Invalid filename' });
         }
 
-        // 验证评论长度
+        // 验证主题长度
+        if (theme.length > 10) {
+            return res.status(400).json({ message: '记录主题超过10字符限制' });
+        }
+
+        // 验证内容长度
         if (comment.length > 300) {
-            return res.status(400).json({ message: '评论内容超过300字符限制' });
+            return res.status(400).json({ message: '记录内容超过300字符限制' });
         }
 
         // 创建评论文件名（原文件名 + .comments.json）
@@ -221,12 +226,12 @@ app.post('/api/save-comment', async (req, res) => {
         
         // 准备评论数据
         const newComment = {
-            id: Date.now().toString(36) + Math.random().toString(36).substr(2, 5), // 生成唯一ID
+            id: Date.now().toString(36) + Math.random().toString(36).slice(2, 7), // 生成唯一ID
             timestamp: timestamp || new Date().toISOString(),
             lineNumber: parseInt(lineNumber),
             lineContent: lineContent.trim(),
+            theme: theme.trim(),
             comment: comment.trim(),
-            createdAt: new Date().toISOString()
         };
         
         // 读取现有评论（如果存在）

@@ -424,18 +424,13 @@
             font-style: italic;
         }
         
-        .comment-time {
-            color: #ffd700;
-            font-weight: bold;
-            font-size: 0.95rem;
-        }
-        
         .comment-content {
             color: #e0e0e0;
             line-height: 1.5;
             font-family: 'Microsoft YaHei', sans-serif;
             font-size: 1.05rem;
             min-height: 80px;
+            text-align: left !important;
             word-wrap: break-word;
         }
         
@@ -560,13 +555,17 @@
         }
         
         .control-panel {
-           text-align: center;
-           width: 100%;
-           position: relative;
-           z-index: 1; /* 确保按钮在最上层 */
+            display: flex;          /* 启用 flex 布局 */
+            flex-direction: column; /* 垂直排列子元素 */
+            align-items: center;    /* 所有子元素水平居中 */
+            width: 100%;
+            position: relative;
+            z-index: 1;
+            gap: 12px; /* 按钮与复选框的垂直间距（现代浏览器支持） */
         }
         
         .action-btn {
+            margin-top: 10px; /* 增加上边距 */
             background: linear-gradient(to bottom, #ffd700, #ff8c00);
             color: #333;
             border: none;
@@ -593,28 +592,17 @@
             margin: 15px 0;
             font-size: 1.2rem;
             color: #ffd700;
+            /* 可选：明确显示时的布局（根据实际需求） */
+            display: flex;       /* 或 block / inline-flex */
+            align-items: center; /* 垂直居中（配合 flex） */
+        }
+
+        /* 与阳光模块同隐藏 */
+        .counter.hidden {
+            display: none !important; /* !important 确保覆盖内联样式    （如    有） */
         }
         
-        .instructions {
-            background: rgba(0, 0, 0, 0.5);
-            border-radius: 10px;
-            padding: 20px;
-            margin: 20px 0;
-            text-align: left;
-            border: 1px solid #ffd700;
-        }
-        
-        .instructions ol {
-            margin-left: 20px;
-            margin-top: 10px;
-            text-align: left;
-            line-height: 1.6;
-        }
-        
-        .instructions li {
-            margin-bottom: 8px;
-        }
-        
+        /* 版权所有 */
         .footer {
             margin-top: 30px;
             font-size: 0.9rem;
@@ -712,6 +700,14 @@
             outline: none;
             border-color: #ffd700;
             box-shadow: 0 0 0 2px rgba(255, 215, 0, 0.2);
+        }
+
+        /* 主题输入框特有样式 */
+        #themeInput {
+            min-height: 20px !important; /* 更小的高度 */
+            max-height: 80px !important; /* 可根据需要调整最大高度 */
+            padding: 8px 12px; /* 减少内边距以匹配较小的高度 */
+            resize: none; /* 禁止调整大小 */
         }
 
         .char-counter {
@@ -856,12 +852,23 @@
                 <div class="popup-body">
                     <div class="current-line-preview">
                         <strong>当前行:<span id="TextLine"></span></strong>
-                        <p id="currentLineContent">色不异空，空不异色</p>
+                        <p id="currentLineContent"></p>
                     </div>
+
+                    <!-- 输入主题 -->
                     <div class="comment-input-area">
-                        <textarea id="commentInput" placeholder="输入您的评论（最多300字）" maxlength="300"></textarea>
+                        <label for="themeInput">主题</label>
+                        <textarea id="themeInput" placeholder="主题（10字以内）" maxlength="10"></textarea>
                         <div class="char-counter">
-                            <span id="charCount">0</span>/300
+                            <span id="themeCharCount">0</span>/10
+                        </div>
+                    </div>
+
+                    <!-- 输入内容 -->
+                    <div class="comment-input-area">
+                        <textarea id="commentInput" placeholder="内容（300字以内）" maxlength="300"></textarea>
+                        <div class="char-counter">
+                            <span id="commentCharCount">0</span>/300
                         </div>
                     </div>
                 </div>
@@ -872,11 +879,11 @@
                             <path d="M7.002 11a1 1 0 1 1 2 0 1 1 0 0 1-2 0z"/>
                             <path d="M8 3.5a.5.5 0 0 1 .5.5v4a.5.5 0 0 1-.5.5H7a.5.5 0 0 1 0-1h.5V4.5a.5.5 0 0 1 .5-.5z"/>
                         </svg>
-                        查看历史评论
+                        回忆一下~
                     </button>
                     <div class="popup-footer-buttons">
                         <button class="action-btn secondary-btn" id="cancelCommentBtn">取消</button>
-                        <button class="action-btn primary-btn" id="saveCommentBtn">保存评论</button>
+                        <button class="action-btn primary-btn" id="saveCommentBtn">保存</button>
                     </div>
                 </div>
             </div>
@@ -887,23 +894,22 @@
             <div class="popup-overlay"></div>
             <div class="history-popup-content">
                 <div class="popup-header">
-                    <h3>文件历史评论 - <span id="historyFileInfo">文件名</span></h3>
+                    <h3>过往记忆 - <span id="historyFileInfo"></span></h3>
                     <button class="close-popup" id="closeHistoryPopup">&times;</button>
                 </div>
                 <div class="popup-body">
                     <div class="history-selector">
-                        <label for="commentHistorySelect">选择历史记录:</label>
+                        <label for="commentHistorySelect">选择记忆点:</label>
                         <select id="commentHistorySelect" class="history-select">
-                            <option value="">-- 选择一个历史记录 --</option>
+                            <option value="">-- 选择记忆点 --</option>
                         </select>
                     </div>
                     <div class="comment-display-area">
                         <div class="comment-meta">
-                            <span class="comment-time" id="commentTimeDisplay">2026-01-26 09:48:00</span>
-                            <span class="comment-meta-info" id="commentMetaInfo">行: 25 | 创建于: 2026-01-26 09:45:55</span>
+                            <span class="comment-meta-info" id="commentMetaInfo">-</span>
                         </div>
                         <div class="comment-content" id="commentContentDisplay">
-                            请选择一个历史评论查看内容
+                            当前无记忆
                         </div>
                     </div>
                 </div>
@@ -933,12 +939,14 @@
         </div>
         
         <div class="control-panel">
+            <button class="action-btn" id="clickBtn">敲</button>
             <div class="sunlight-control">
                 <input type="checkbox" id="enableSunlight">
                 <label for="enableSunlight">启用阳光模块</label>
             </div>
-            <div class="counter">已获得道德: <span id="g_moralCounter">0</span></div>
-            <button class="action-btn" id="clickBtn">敲</button>
+            <div id="moralCounterContainer" class="counter hidden">
+                已获得道德: <span id="g_moralCounter">0</span>
+            </div>
         </div>
         
         <div class="footer">
@@ -1001,6 +1009,7 @@
             const audio = new Audio(audioData[key]);
             g_audioCache[key] = audio;
         });
+        debugLog("preloadAudio finish.");
     }
 
     // 播放音效
@@ -1051,9 +1060,10 @@
                 closeScripturePopup();
             }
         });
-        
+
         // 加载经文列表
         loadScriptureList();
+        debugLog("initTextSelector finish.");
     }
 
     // 打开弹出框
@@ -1103,6 +1113,8 @@
             confirmScriptureBtn.disabled = false;
             confirmScriptureBtn.textContent = '确定';
         }
+
+        debugLog("loadScriptureList finish.");
     }
 
     // 加载选中的经文
@@ -1317,6 +1329,8 @@
                 saveToLocalProgress(g_currentScriptureFile, g_currentTextIndex);
             }
         };
+
+        debugLog("initProgressSaving finish.");
     }
 // --------------------------- TextSelect end------------------------ //
 
@@ -1324,14 +1338,16 @@
 // --------------------------- Comment --------------------------- //
     // 评论功能初始化
     function initCommentSystem() {
-        const addCommentBtn = document.getElementById('addCommentBtn');
-        const commentPopup = document.getElementById('commentPopup');
+        const addCommentBtn     = document.getElementById('addCommentBtn');
+        const commentPopup      = document.getElementById('commentPopup');
         const closeCommentPopup = document.getElementById('closeCommentPopup');
-        const cancelCommentBtn = document.getElementById('cancelCommentBtn');
-        const saveCommentBtn = document.getElementById('saveCommentBtn');
-        const commentInput = document.getElementById('commentInput');
-        const charCount = document.getElementById('charCount');
-
+        const cancelCommentBtn  = document.getElementById('cancelCommentBtn');
+        const saveCommentBtn    = document.getElementById('saveCommentBtn');
+        const themeInput        = document.getElementById('themeInput');
+        const commentInput      = document.getElementById('commentInput');
+        const themeCharCount    = document.getElementById('themeCharCount');
+        const commentCharCount  = document.getElementById('commentCharCount');
+        
         if (!addCommentBtn || !commentPopup) {
             console.log('Comment system elements not found ');
             return;
@@ -1347,15 +1363,20 @@
             updateCommentPopupContent();
             commentPopup.classList.add('active');
 
-            // 聚焦输入框并清空
+            // 聚焦主题输入框并清空
+            themeInput.value = '';
+            themeInput.focus();
+            chkThemeChar();
+            
+            // 清空内容输入框
             commentInput.value = '';
-            commentInput.focus();
-            updateCharCount();
+            chkContentChar();
         });
 
         // 关闭弹出框
         function closePopup() {
             commentPopup.classList.remove('active');
+            themeInput.value = '';
             commentInput.value = '';
         }
 
@@ -1377,8 +1398,11 @@
             }
         });
 
-        // 字符计数
-        commentInput.addEventListener('input', updateCharCount);
+        // 主题字符计数
+        themeInput.addEventListener('input', chkThemeChar);
+        
+        // 内容字符计数
+        commentInput.addEventListener('input', chkContentChar);
 
         // 保存评论
         saveCommentBtn.addEventListener('click', async () => {
@@ -1419,15 +1443,35 @@
             document.getElementById('currentLineContent').textContent = currentLineContent;
         }
 
-        // 更新字符计数
-        function updateCharCount() {
+        // 更新主题字符计数
+        function chkThemeChar() {
+            const count = themeInput.value.length;
+            themeCharCount.textContent = count;
+
+            if (count > 8) {
+                themeCharCount.parentElement.style.color = count > 10 ? '#ff4444' : '#ffd700';
+                if(count == 10)
+                {
+                    showTemporaryMessage('练习下缩句哈', 'warning');
+                }
+            } else {
+                themeCharCount.parentElement.style.color = '#aaa';
+            }
+        }
+
+        // 更新内容字符计数
+        function chkContentChar() {
             const count = commentInput.value.length;
-            charCount.textContent = count;
+            commentCharCount.textContent = count;
 
             if (count > 280) {
-                charCount.parentElement.style.color = count > 300 ? '#ff4444' : '#ffd700';
+                commentCharCount.parentElement.style.color = count > 300 ? '#ff4444' : '#ffd700';
+                if(count == 300)
+                {
+                    showTemporaryMessage('写个小作文就可以了，别整大作文', 'warning');
+                }
             } else {
-                charCount.parentElement.style.color = '#aaa';
+                commentCharCount.parentElement.style.color = '#aaa';
             }
         }
 
@@ -1435,6 +1479,7 @@
         async function saveCommentToServer() {
             const currentLineIndex = g_currentTextIndex > 0 ? g_currentTextIndex - 1 : 0;
             const currentLineContent = Scriptures[currentLineIndex] || '';
+            const theme = themeInput.value.trim();
             const comment = commentInput.value.trim();
                 
             try {
@@ -1449,6 +1494,7 @@
                         filename: g_currentScriptureFile,
                         lineNumber: currentLineIndex + 1,
                         lineContent: currentLineContent,
+                        theme: theme,
                         comment: comment,
                         timestamp: new Date().toISOString()
                     }),
@@ -1612,6 +1658,8 @@
                 }
             });
         }
+
+        debugLog("initCommentSystem finish.");
     }
 
     // 显示历史评论弹窗 - 按文件记录
@@ -1624,13 +1672,12 @@
 
         // 填充下拉框
         const selectElement = document.getElementById('commentHistorySelect');
-        selectElement.innerHTML = '<option value="">-- 选择一个历史记录 --</option>';
+        selectElement.innerHTML = '<option value="">-- 选择记忆点 --</option>';
 
         if (comments.length === 0) {
-            showTemporaryMessage('当前文件暂无历史评论', 'info', { duration: 2000 });
+            showTemporaryMessage('当前经文暂无记忆', 'info', { duration: 2000 });
             selectElement.disabled = true;
-            document.getElementById('commentContentDisplay').textContent = '当前文件没有历史评论记录';
-            document.getElementById('commentTimeDisplay').textContent = '';
+            document.getElementById('commentContentDisplay').textContent = '当前经文没有记忆点';
             document.getElementById('commentMetaInfo').textContent = '';
         } else {
             selectElement.disabled = false;
@@ -1639,7 +1686,7 @@
                 const option = document.createElement('option');
                 const displayTime = formatCommentTime(comment.timestamp);
                 option.value = comment.id;
-                option.textContent = ` ${displayTime} -  ${comment.comment.substring(0, 30)} ${comment.comment.length > 30 ? '...' : ''}`;
+                option.textContent = ` ${displayTime} -  ${comment.theme.substring(0, 10)} ${comment.theme.length > 10 ? '...' : ''}`;
                 option.dataset.comment = JSON.stringify(comment);
                 selectElement.appendChild(option);
             });
@@ -1664,23 +1711,21 @@
         if (selectedOption && selectedOption.dataset.comment) {
             try {
                 const comment = JSON.parse(selectedOption.dataset.comment);
-                document.getElementById('commentContentDisplay').textContent = comment.comment || '无评论内容';
-                document.getElementById('commentTimeDisplay').textContent = formatCommentTime(comment.timestamp);
+                document.getElementById('commentContentDisplay').textContent = comment.comment || '无记忆';
 
                 // 显示元数据
-                let metaText = `创建于:  ${formatCommentTime(comment.createdAt)}`;
+                let metaText = `创建于:  ${formatCommentTime(comment.timestamp)}`;
                 if (comment.lineNumber) {
                     metaText += ` | 行:  ${comment.lineNumber}`;
                 }
                 if (comment.lineContent) {
-                    metaText += ` | 内容:  ${comment.lineContent.substring(0, 50)} ${comment.lineContent.length > 50 ? '...' : ''}`;
+                    metaText += ` | 内容:  ${comment.lineContent.substring(0, 20)} ${comment.lineContent.length > 20 ? '...' : ''}`;
                 }
                 document.getElementById('commentMetaInfo').textContent = metaText;
             } catch (e) {
-                console.error('解析评论数据失败:', e);
-                document.getElementById('commentContentDisplay').textContent = '评论内容加载失败';
-                document.getElementById('commentTimeDisplay').textContent = '未知时间';
-                document.getElementById('commentMetaInfo').textContent = '元数据加载失败';
+                console.error('解析记忆数据失败:', e);
+                document.getElementById('commentContentDisplay').textContent = '记忆读取失败';
+                document.getElementById('commentMetaInfo').textContent = '记忆元数据读取失败';
             }
         }
     }
@@ -1980,6 +2025,8 @@ class ObjectPool
         g_originSunElement = document.getElementById('originSun') || document.querySelector('.originSun');
         // 初始化对象池
         g_sunlightPool = new ObjectPool(createSunlightElement, 15);
+        
+        debugLog("initSunlightModule finish.");
     }
 
     // 创建阳光
@@ -2359,6 +2406,14 @@ function showTemporaryMessage(message, type = 'info', options = {}) {
                 {
                     // 如果禁用阳光模块，清除所有存在的阳光
                     clearAllSunlights();
+
+                    // 禁用阳光模块，隐藏
+                    document.getElementById('moralCounterContainer').classList.add('hidden');
+                }
+                else
+                {
+                    // 启用阳光模块，显示
+                    document.getElementById('moralCounterContainer').classList.remove('hidden');
                 }
             });
         }
