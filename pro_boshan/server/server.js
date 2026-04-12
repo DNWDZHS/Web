@@ -35,8 +35,8 @@ const startServer = async () => {
     app.listen(PORT, '0.0.0.0', () => {
         const localIP = getLocalIP();
         console.log(`✅ Server running at:`);
-        console.log(`   Local:   http://localhost: ${PORT}`);
-        console.log(`   Network: http:// ${localIP}: ${PORT}`);
+        console.log(`   Local:   http://localhost:${PORT}`);
+        console.log(`   Network: http://${localIP}:${PORT}`);
         debugLog(`Available endpoints:`);
         debugLog(` GET /api/resources/:type (background, images, audio, Jing)`);
         debugLog(` POST /api/save-text`);

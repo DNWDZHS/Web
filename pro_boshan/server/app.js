@@ -3,6 +3,29 @@ debugLog("DEBUG = ", process.env.DEBUG, "debugMode = ", debugMode);
 
 function debugLog(...args){
     if(debugMode){
+        // 创建一个 Error 对象获取调用栈
+        const error = new Error();
+        // 解析调用栈，获取调用位置信息
+        const stackLines = error.stack.split('\n');
+        // 栈的第0行是 Error 本身，第1行是 debugLog 函数内部，第2行是实际调用位置
+        if (stackLines.length > 2) {
+            const callerLine = stackLines[2].trim();
+            // 提取文件路径和行号（支持不同格式的调用栈）
+            let match = callerLine.match(/\((.*):(\d+):(\d+)\)$/);
+            if (!match) {
+                // 尝试匹配另一种格式
+                match = callerLine.match(/at.*\s+([^\s]+):(\d+):(\d+)$/);
+            }
+            if (match) {
+                let filePath = match[1];
+                const line = match[2];
+                // 处理不同操作系统的路径格式
+                const fileName = filePath.split(/[\\/]/).pop(); // 获取文件名
+                console.log(`[DEBUG] [${fileName}:${line}]`, ...args);
+                return;
+            }
+        }
+        // 如果无法解析，使用默认格式
         console.log('[DEBUG]', ...args);
     }
 }
@@ -32,12 +55,13 @@ const initializeStorage = async () => {
     await ensureDirExits(path.join(__dirname, '../public/background'));
     await ensureDirExits(path.join(__dirname, '../public/images'));
     await ensureDirExits(path.join(__dirname, '../public/Jing'));
+    await ensureDirExits(path.join(__dirname, '../public/Jing/savedata')); // 添加这一行
     debugLog('Storage Directory initialized');
 };
 
 // 校验文件名
 function IsValidFilename(filename, caller) {
-    const filenameRegex = /^[a-zA-Z0-9_-]+\.txt$/;
+    const filenameRegex = /^[\u4e00-\u9fa5a-zA-Z0-9_-]+\.txt$/;
     if (!filenameRegex.test(filename)) {
         debugLog(`${caller} failed, filename "${filename}" is invalid`);
         return false;

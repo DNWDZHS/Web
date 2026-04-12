@@ -52,10 +52,15 @@
         .title {
             font-size: 2.5rem;
             margin: 20px 0;
-            color: #bfe3d2; /* 竹青文字 */
-            text-shadow: 0 0 8px rgba(100, 180, 180, 0.7); /* 青玉光晕 */
+            color: #ffd700; /* 金色文字 */
+            text-shadow: 
+                0 0 12px rgba(255, 215, 0, 0.8), /* 金色光晕 */
+                0 0 20px rgba(255, 215, 0, 0.5), /* 外层光晕 */
+                2px 2px 4px rgba(0, 0, 0, 0.8); /* 深色阴影增加立体感 */
+            -webkit-text-stroke: 1px rgba(0, 0, 0, 0.5); /* 文字描边 */
             letter-spacing: 2px;
             font-family: 'STKaiti', 'KaiTi', 'SimSun', serif; /* 书法字体 */
+            font-weight: bold;
         }
         
         /* 确保interactive-area允许子元素溢出, 主要用于限制阳光生成范围 */
@@ -74,6 +79,9 @@
             padding-top: 70px; /* ≈ 高度(40px图标+上下padding)+安全余量 */
             box-sizing: border-box;
             overflow: visible;
+
+            /* 长方形固定圆角值 */
+            border-radius: 15px;
             /* 添加山水层次感 */
             background: linear-gradient(to bottom, 
                 rgba(10, 30, 50, 0.1) 0%, 
@@ -89,12 +97,11 @@
             display: flex;
             justify-content: center;
             align-items: center;
-            cursor: pointer;
+            /* cursor: pointer; */
             transition: transform 0.2s cubic-bezier(0.34, 1.56, 0.64, 1);
             transform-origin: center;
-            /* 木鱼容器边框 */
-            /* border: 1px solid rgba(70, 150, 150, 0.4); */
-            /* border-radius: 50%; */
+            /* 木鱼容器边框 正方形百分比圆角值 */
+            border-radius: 5%;
             box-shadow: 0 0 15px rgba(30, 80, 100, 0.3);
         }
 
@@ -149,10 +156,186 @@
         .originSun {
             width: 40px;
             height: 40px;
-            background: url('images/Sunlight.png') no-repeat center center;
-            background-size: contain;
-            cursor: pointer;
-            filter: drop-shadow(0 0 3px rgba(255, 215, 0, 0.5)); /* 保留阳光暖色但降低饱和度 */
+            /* cursor: pointer; */
+            position: relative;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .originSun::before {
+            content: '';
+            position: absolute;
+            width: 30px;
+            height: 30px;
+            background: radial-gradient(circle, #ffd700, #ff9800, #ff7f00);
+            border-radius: 50%;
+            box-shadow: 0 0 12px rgba(255, 215, 0, 0.8), inset 0 0 10px rgba(255, 255, 255, 0.5);
+            animation: sunPulse 2s ease-in-out infinite;
+        }
+
+        .originSun::after {
+            content: '';
+            position: absolute;
+            width: 40px;
+            height: 40px;
+            background: conic-gradient(
+                transparent 0deg, 
+                rgba(255, 230, 0, 1) 10deg, 
+                transparent 15deg, 
+                rgba(255, 230, 0, 1) 25deg, 
+                transparent 30deg, 
+                rgba(255, 230, 0, 1) 40deg, 
+                transparent 45deg, 
+                rgba(255, 230, 0, 1) 55deg, 
+                transparent 60deg, 
+                rgba(255, 230, 0, 1) 70deg, 
+                transparent 75deg, 
+                rgba(255, 230, 0, 1) 85deg, 
+                transparent 90deg, 
+                rgba(255, 230, 0, 1) 100deg, 
+                transparent 105deg, 
+                rgba(255, 230, 0, 1) 115deg, 
+                transparent 120deg, 
+                rgba(255, 230, 0, 1) 130deg, 
+                transparent 135deg, 
+                rgba(255, 230, 0, 1) 145deg, 
+                transparent 150deg, 
+                rgba(255, 230, 0, 1) 160deg, 
+                transparent 165deg, 
+                rgba(255, 230, 0, 1) 175deg, 
+                transparent 180deg, 
+                rgba(255, 230, 0, 1) 190deg, 
+                transparent 195deg, 
+                rgba(255, 230, 0, 1) 205deg, 
+                transparent 210deg, 
+                rgba(255, 230, 0, 1) 220deg, 
+                transparent 225deg, 
+                rgba(255, 230, 0, 1) 235deg, 
+                transparent 240deg, 
+                rgba(255, 230, 0, 1) 250deg, 
+                transparent 255deg, 
+                rgba(255, 230, 0, 1) 265deg, 
+                transparent 270deg, 
+                rgba(255, 230, 0, 1) 280deg, 
+                transparent 285deg, 
+                rgba(255, 230, 0, 1) 295deg, 
+                transparent 300deg, 
+                rgba(255, 230, 0, 1) 310deg, 
+                transparent 315deg, 
+                rgba(255, 230, 0, 1) 325deg, 
+                transparent 330deg, 
+                rgba(255, 230, 0, 1) 340deg, 
+                transparent 345deg, 
+                rgba(255, 230, 0, 1) 355deg, 
+                transparent 360deg
+            );
+            border-radius: 50%;
+            animation: sunRotate 8s linear infinite;
+        }
+
+        @keyframes sunPulse {
+            0%, 100% {
+                transform: scale(1);
+                opacity: 0.8;
+            }
+            50% {
+                transform: scale(1.1);
+                opacity: 1;
+            }
+        }
+
+        @keyframes sunRotate {
+            from {
+                transform: rotate(0deg);
+            }
+            to {
+                transform: rotate(360deg);
+            }
+        }
+
+        /* 动态阳光元素样式 */
+        .sunlight {
+            position: relative;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .sunlight::before {
+            content: '';
+            position: absolute;
+            width: 30px;
+            height: 30px;
+            background: radial-gradient(circle, #ffd700, #ff9800, #ff7f00);
+            border-radius: 50%;
+            box-shadow: 0 0 12px rgba(255, 215, 0, 0.8), inset 0 0 10px rgba(255, 255, 255, 0.5);
+            animation: sunPulse 2s ease-in-out infinite;
+        }
+
+        .sunlight::after {
+            content: '';
+            position: absolute;
+            width: 40px;
+            height: 40px;
+
+            /* 解决伪元素中心对不齐的问题 */
+            left: -12%;
+            top: -12%;
+            
+            background: conic-gradient(
+                transparent 0deg, 
+                rgba(255, 230, 0, 1) 10deg, 
+                transparent 15deg, 
+                rgba(255, 230, 0, 1) 25deg, 
+                transparent 30deg, 
+                rgba(255, 230, 0, 1) 40deg, 
+                transparent 45deg, 
+                rgba(255, 230, 0, 1) 55deg, 
+                transparent 60deg, 
+                rgba(255, 230, 0, 1) 70deg, 
+                transparent 75deg, 
+                rgba(255, 230, 0, 1) 85deg, 
+                transparent 90deg, 
+                rgba(255, 230, 0, 1) 100deg, 
+                transparent 105deg, 
+                rgba(255, 230, 0, 1) 115deg, 
+                transparent 120deg, 
+                rgba(255, 230, 0, 1) 130deg, 
+                transparent 135deg, 
+                rgba(255, 230, 0, 1) 145deg, 
+                transparent 150deg, 
+                rgba(255, 230, 0, 1) 160deg, 
+                transparent 165deg, 
+                rgba(255, 230, 0, 1) 175deg, 
+                transparent 180deg, 
+                rgba(255, 230, 0, 1) 190deg, 
+                transparent 195deg, 
+                rgba(255, 230, 0, 1) 205deg, 
+                transparent 210deg, 
+                rgba(255, 230, 0, 1) 220deg, 
+                transparent 225deg, 
+                rgba(255, 230, 0, 1) 235deg, 
+                transparent 240deg, 
+                rgba(255, 230, 0, 1) 250deg, 
+                transparent 255deg, 
+                rgba(255, 230, 0, 1) 265deg, 
+                transparent 270deg, 
+                rgba(255, 230, 0, 1) 280deg, 
+                transparent 285deg, 
+                rgba(255, 230, 0, 1) 295deg, 
+                transparent 300deg, 
+                rgba(255, 230, 0, 1) 310deg, 
+                transparent 315deg, 
+                rgba(255, 230, 0, 1) 325deg, 
+                transparent 330deg, 
+                rgba(255, 230, 0, 1) 340deg, 
+                transparent 345deg, 
+                rgba(255, 230, 0, 1) 355deg, 
+                transparent 360deg
+            );
+            border-radius: 50%;
+            animation: sunRotate 8s linear infinite;
         }
 
         /* 经文选择按钮 - 固定在木鱼图片右下角 */
@@ -1338,6 +1521,7 @@
                 },
                 body: JSON.stringify({
                     filename: g_currentScriptureFile,
+                    // 行号 [0, Scriptures.length)
                     currentIndex: g_currentTextIndex
                 })
             });
@@ -1436,11 +1620,12 @@
             if (g_currentScriptureFile && navigator.sendBeacon) {
                 const data = {
                     filename: g_currentScriptureFile,
+                    // 行号 [0, Scriptures.length)
                     currentIndex: g_currentTextIndex
                 };
                 const blob = new Blob([JSON.stringify(data)], { type: 'application/json' });
                 navigator.sendBeacon('/api/save-reading-progress', blob);
-                console.log('Reading progress sent via Beacon API on unload');
+                debugLog('Reading progress sent via Beacon API on unload');
             }
         });
 
@@ -2089,8 +2274,7 @@ class ObjectPool
     // 创建阳光元素
     function createSunlightElement() 
     {
-        const sunlight = document.createElement('img');
-        sunlight.src = 'images/Sunlight.png';
+        const sunlight = document.createElement('div');
         sunlight.className = 'sunlight';
         sunlight.style.position = 'absolute';
         sunlight.style.display = 'none';
