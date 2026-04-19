@@ -105,7 +105,7 @@ def main():
     else:
         # 如果没有提供输出文件路径，使用输入文件名，在前面添加"processed_"前缀
         input_filename = os.path.basename(input_file)
-        output_filename = f"processed_{input_filename}"
+        output_filename = f"{input_filename}"
         output_file = os.path.join(default_path, output_filename)
     
     # 检查输入文件是否存在
