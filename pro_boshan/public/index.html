@@ -6,6 +6,37 @@
 
      <!-- 添加一个简单的缩略图标 favicon -->
      <link rel="icon" href="data:image/svg+xml,<svg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 100 100%22><text y=%22.9em%22 font-size=%2290%22>☸</text></svg>">
+
+    <!-- 移动设备触摸优化 -->
+    <script>
+      // 等待DOM加载完成
+      document.addEventListener('DOMContentLoaded', function() {
+        // 检测触摸设备
+        const isTouchDevice = 'ontouchstart' in window || navigator.maxTouchPoints > 0;
+        
+        if (isTouchDevice) {
+          // 为所有可点击元素添加触摸事件处理
+          const clickableElements = document.querySelectorAll('button, .click-btn, .image-container, .originSun');
+          
+          clickableElements.forEach(element => {
+            // 阻止默认触摸行为
+            element.addEventListener('touchstart', function(e) {
+              e.preventDefault();
+            }, { passive: false });
+            
+            element.addEventListener('touchmove', function(e) {
+              e.preventDefault();
+            }, { passive: false });
+            
+            element.addEventListener('touchend', function(e) {
+              e.preventDefault();
+              // 触发点击事件
+              this.click();
+            }, { passive: false });
+          });
+        }
+      });
+    </script>
      
     <title>Cyber Muyu</title>
     <style>
@@ -232,6 +263,7 @@
             );
             border-radius: 50%;
             animation: sunRotate 8s linear infinite;
+            mix-blend-mode: screen;
         }
 
         @keyframes sunPulse {
@@ -336,6 +368,7 @@
             );
             border-radius: 50%;
             animation: sunRotate 8s linear infinite;
+            mix-blend-mode: screen;
         }
 
         /* 经文选择按钮 - 固定在木鱼图片右下角 */
@@ -1799,7 +1832,7 @@
 
         // 保存评论到服务器
         async function saveCommentToServer() {
-            const currentLineIndex = g_currentTextIndex > 0 ? g_currentTextIndex - 1 : 0;
+            const currentLineIndex = g_currentTextIndex > 0 ? g_currentTextIndex : 0;
             const currentLineContent = Scriptures[currentLineIndex] || '';
             const theme = themeInput.value.trim();
             const comment = commentInput.value.trim();
